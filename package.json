@@ -1,18 +1,40 @@
 {
-  "name": "youtupe",
+  "name": "youtube",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3002",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.9.0",
     "eslint": "8.27.0",
     "eslint-config-next": "13.0.2",
     "next": "13.0.2",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-drag-drop-files": "^2.3.8",
+    "react-icons": "^4.6.0",
+    "react-media-recorder": "^1.6.5",
+    "react-redux": "^8.0.5",
+    "react-toastify": "^9.1.1",
+    "react-youtube": "^10.1.0",
+    "styled-components": "^5.3.6"
+  },
+  "presets": [
+    "next/babel"
+  ],
+  "plugins": [
+    [
+      "styled-components",
+      {
+        "ssr": true
+      }
+    ]
+  ],
+  "devDependencies": {
+    "babel-plugin-styled-components": "^2.0.7"
   }
 }

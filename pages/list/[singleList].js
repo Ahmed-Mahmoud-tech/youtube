@@ -1,8 +1,8 @@
 import Head from "next/head";
-import Block from "../components/BlockContainer/Block/Block";
-import BlockContainer from "../components/BlockContainer/BlockContainer";
+import Block from "../../components/BlockContainer/Block/Block";
+import BlockContainer from "../../components/BlockContainer/BlockContainer";
 
-export default function Home() {
+export default function List() {
   const data = [
     {
       listNumber: 0,
