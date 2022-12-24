@@ -11,7 +11,9 @@ import Inform from "../Globals/Inform/Inform";
 import { FileUploader } from "react-drag-drop-files";
 const fileTypes = ["mp3", "WAV", "mp4"];
 
-const RecordView = () => {
+const RecordView = ({
+  serverAudio = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+}) => {
   const {
     status,
     startRecording,
@@ -44,8 +46,10 @@ const RecordView = () => {
   const [audioRef, setAudioRef] = useState();
   const [theFile, setTheFile] = useState(mediaBlobUrl);
   const [option, setOption] = useState(opts);
+  const [uploadFirst, setUploadFirst] = useState(false);
 
   const recordAudioRef = useRef();
+  const serverAudioRef = useRef();
   const uploadSrcRef = useRef();
 
   // end second
@@ -106,12 +110,17 @@ const RecordView = () => {
       if (dubbingOption == 2) {
         micFun();
       }
-      if (dubbingOption == 1) {
+
+      if (dubbingOption == 7) {
+        setAudioRef(serverAudioRef);
+        setSectionType("audio");
+      } else if (dubbingOption == 1) {
         setAudioRef(uploadSrcRef);
       } else {
         setAudioRef(recordAudioRef);
       }
     }
+    setTheFile();
   }, [dubbingOption]);
 
   /***********  recFunction  ***********/
@@ -238,17 +247,20 @@ const RecordView = () => {
 
   const onStateChange = (event) => {
     console.log("step", "0");
-
     // setTimeout(() => {
+    if (dubbingOption == 1 && !theFile && event.data === 1) {
+      recPause();
+      setUploadFirst(true);
+      setTimeout(() => {
+        setUploadFirst(false);
+      }, 3000);
+    }
     if (dubbingOption == 2 || sectionType === "audio") {
       console.log("step", "1", event.data, numberOfLastAction);
 
       if (event.data != numberOfLastAction) {
         console.log("step", "2", event.data, numberOfLastAction);
-        // if (event.data == "3") {
-        //   console.log("step", "3", event.data, numberOfLastAction);
-        //   setNumberOfLastAction(3);
-        // }
+
         if (event.data === 1) {
           console.log("step", "4", event.data, numberOfLastAction);
           if (player.getCurrentTime() - startSec < 1) {
@@ -298,6 +310,7 @@ const RecordView = () => {
   };
 
   const handleChange = (file) => {
+    setUploadFirst(false);
     console.log("*********", URL.createObjectURL(file[0]));
     setTheFile(URL.createObjectURL(file[0]));
     setNumberOfLastAction(null);
@@ -381,37 +394,31 @@ const RecordView = () => {
           {/* <p>{status}</p> */}
 
           <audio
-            // src={file ? URL.createObjectURL(file[0]) : mediaBlobUrl }
             src={theFile && theFile}
-            // src={
-            //   "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
-            // }
             controls
             ref={uploadSrcRef}
-            // style={{ display: "none" }}
+            style={{ display: "none" }}
           />
 
           <audio
-            // src={mediaBlobUrl}
-            // src={mediaBlobUrl}
-            // src={file ? URL.createObjectURL(file[0]) : mediaBlobUrl }
             src={mediaBlobUrl}
             controls
             ref={recordAudioRef}
+            style={{ display: "none" }}
+          />
+          {console.log({ serverAudio })}
+          <audio
+            src={serverAudio}
+            controls
+            ref={serverAudioRef}
             // style={{ display: "none" }}
           />
-
-          {/* <audio
-            src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
-            controls
-            ref={audioRef}
-          /> */}
         </div>
       </div>
       {!mic && dubbingOption === "2" && (
         <Inform text="Access the microphone, please" />
       )}
-      <button onClick={() => audioRef.current.play()}>000000000000000</button>
+      {uploadFirst && <Inform text="please upload your audio" />}
     </Wrapper>
   );
 };

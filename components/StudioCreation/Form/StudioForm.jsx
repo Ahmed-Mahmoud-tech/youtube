@@ -92,6 +92,7 @@ const StudioForm = ({
               <option value="0">Without Dubbing</option>
               <option value="1">Upload Dubbing</option>
               <option value="2">Record Dubbing</option>
+              <option value="7">server audio</option>
             </select>
           </div>
 
