@@ -41,7 +41,7 @@ const RecordView = () => {
   const [videoDuration, setVideoDuration] = useState(0);
   const [startAction, setStartAction] = useState(true);
   const [mic, setMic] = useState(false);
-  const [audioRef, setAudioRef] = useState(uploadSrcRef);
+  const [audioRef, setAudioRef] = useState();
   const [theFile, setTheFile] = useState(mediaBlobUrl);
   const [option, setOption] = useState(opts);
 
@@ -237,16 +237,18 @@ const RecordView = () => {
   /******** end recFunction  ***********/
 
   const onStateChange = (event) => {
+    console.log("step", "0");
+
     // setTimeout(() => {
     if (dubbingOption == 2 || sectionType === "audio") {
       console.log("step", "1", event.data, numberOfLastAction);
 
       if (event.data != numberOfLastAction) {
         console.log("step", "2", event.data, numberOfLastAction);
-        if (event.data == "3") {
-          console.log("step", "3", event.data, numberOfLastAction);
-          setNumberOfLastAction(3);
-        }
+        // if (event.data == "3") {
+        //   console.log("step", "3", event.data, numberOfLastAction);
+        //   setNumberOfLastAction(3);
+        // }
         if (event.data === 1) {
           console.log("step", "4", event.data, numberOfLastAction);
           if (player.getCurrentTime() - startSec < 1) {
@@ -296,7 +298,8 @@ const RecordView = () => {
   };
 
   const handleChange = (file) => {
-    setTheFile(file);
+    console.log("*********", URL.createObjectURL(file[0]));
+    setTheFile(URL.createObjectURL(file[0]));
     setNumberOfLastAction(null);
     setSectionType("audio");
     player.seekTo(startSec).pauseVideo();
@@ -379,7 +382,10 @@ const RecordView = () => {
 
           <audio
             // src={file ? URL.createObjectURL(file[0]) : mediaBlobUrl }
-            src={theFile && URL.createObjectURL(theFile[0])}
+            src={theFile && theFile}
+            // src={
+            //   "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+            // }
             controls
             ref={uploadSrcRef}
             // style={{ display: "none" }}
