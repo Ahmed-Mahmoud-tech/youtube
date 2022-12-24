@@ -81,7 +81,10 @@ const StudioForm = ({
               name="type"
               id="type"
               defaultValue=""
-              onChange={(e) => setDubbingOption(e.target.value)}
+              onChange={(e) => {
+                setDubbingOption(e.target.value);
+                // if (e.target.value == 2) setTheFile(mediaBlobUrl);
+              }}
             >
               <option value="" disabled>
                 Dubbing Options

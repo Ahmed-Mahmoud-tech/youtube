@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useRef } from "react";
 import StudioForm from "./Form/StudioForm";
 import Wrapper from "./StudioCreation.styled";
-import { useDispatch } from "react-redux";
 import Inform from "../Globals/Inform/Inform";
 
 // acquiring_media
@@ -13,8 +12,6 @@ import { FileUploader } from "react-drag-drop-files";
 const fileTypes = ["mp3", "WAV", "mp4"];
 
 const RecordView = () => {
-  const dispatch = useDispatch();
-
   const {
     status,
     startRecording,
@@ -23,6 +20,12 @@ const RecordView = () => {
     resumeRecording,
     mediaBlobUrl,
   } = useReactMediaRecorder({ video: false });
+
+  const opts = {
+    width: "100%",
+    height: "100%",
+    playerVars: { controls: controls, end: endSec, start: startSec },
+  };
 
   // console.log("dddddddddddddd", useReactMediaRecorder({ video: false }));
   const [videoId, setVideoId] = useState("");
@@ -38,23 +41,20 @@ const RecordView = () => {
   const [videoDuration, setVideoDuration] = useState(0);
   const [startAction, setStartAction] = useState(true);
   const [mic, setMic] = useState(false);
-  const [file, setFile] = useState(null);
-
-  const audioRef = useRef();
-
-  const opts = {
-    width: "100%",
-    height: "100%",
-    playerVars: { controls: controls, end: endSec, start: startSec },
-  };
-
+  const [audioRef, setAudioRef] = useState(uploadSrcRef);
+  const [theFile, setTheFile] = useState(mediaBlobUrl);
   const [option, setOption] = useState(opts);
 
+  const recordAudioRef = useRef();
+  const uploadSrcRef = useRef();
+
+  // end second
   useEffect(() => {
     opts.playerVars.end = endSec;
     setOption(opts);
   }, [endSec]);
-  0;
+
+  // start second
   useEffect(() => {
     opts.playerVars.start = startSec;
     setOption(opts);
@@ -62,6 +62,7 @@ const RecordView = () => {
     player && setSectionType("record");
   }, [startSec]);
 
+  // mic validation
   const micConditions = (permission) => {
     if (permission.state === "granted") {
       setMic(true);
@@ -89,27 +90,28 @@ const RecordView = () => {
     };
   };
 
+  // window
   useEffect(() => {
     window.innerWidth < 768 && setVideoWidth(1);
-    var blob = window.URL || window.webkitURL;
-    if (!blob) {
-      console.log("Your browser does not support Blob URLs :(");
-      return;
-    }
   }, []);
 
+  // change dubbing Option
   useEffect(() => {
-    player && recReset();
-    setSectionType("record");
-    player && setControls(0);
-    player && setEndSec();
-    player && setStartSec(0);
-    console.log({ player });
-
-    if (player && dubbingOption == 2) {
-      player && micFun();
+    if (player) {
+      recReset();
+      setSectionType("record");
+      setControls(0);
+      setEndSec();
+      setStartSec(0);
+      if (dubbingOption == 2) {
+        micFun();
+      }
+      if (dubbingOption == 1) {
+        setAudioRef(uploadSrcRef);
+      } else {
+        setAudioRef(recordAudioRef);
+      }
     }
-    setFile(null);
   }, [dubbingOption]);
 
   /***********  recFunction  ***********/
@@ -117,7 +119,7 @@ const RecordView = () => {
   const onReady = (event) => {
     setPlayer(event.target);
     event.target.mute();
-    audioRef.current.addEventListener("ended", () => {
+    audioRef?.current.addEventListener("ended", () => {
       event.target.pauseVideo().seekTo(startSec);
     });
     setVideoDuration(event.target.getDuration());
@@ -128,77 +130,86 @@ const RecordView = () => {
     recReset();
   };
 
-  const uploadAgain = () => {
-    console.log("uploadAgain");
-  };
-
   const recStart = () => {
     setNumberOfLastAction(1);
     player.seekTo(startSec).playVideo().mute();
+    console.log("recStart");
     if (sectionType === "record") {
+      console.log("recStart, record mode");
       startRecording();
       if (mic === false) {
+        console.log("recStart, mic is closed");
         recPause();
       }
-    } else {
+    } else if (sectionType === "audio") {
+      console.log("recStart, audio mode");
       audioRef.current.currentTime = player.getCurrentTime() - startSec;
-      console.log("object1");
       audioRef.current.play();
-      console.log("object2", audioRef.current);
     }
     setStartAction(false);
   };
 
   const recPause = () => {
+    console.log("recPause");
     setNumberOfLastAction(2);
     player.pauseVideo();
     setPauseSec(player.getCurrentTime());
-    console.log("465456456456", player.getCurrentTime());
     if (sectionType === "record") {
+      console.log("recPause, record mode");
       pauseRecording();
-    } else {
+    } else if (sectionType === "audio") {
+      console.log("recPause, audio mode");
       audioRef.current.pause();
     }
   };
 
   const recResume = () => {
+    console.log("recResume");
     setNumberOfLastAction(1);
     if (sectionType === "record") {
+      console.log("recResume, record mode");
       if (Math.abs(player.getCurrentTime() - pauseSec) > 1 || mic === false) {
+        console.log("recResume, record mode, pause");
         recPause();
       } else {
+        console.log("recResume, record mode, resume");
         player.playVideo();
         resumeRecording();
       }
     } else if (sectionType === "audio") {
-      console.log("audio");
+      console.log("recResume, audio mode");
+      // if video over or lower than audio duration
       if (
         player.getCurrentTime() - startSec - 1 > audioRef.current.duration ||
         player.getCurrentTime() < startSec
       ) {
-        console.log("reset");
+        console.log(
+          "recResume, record mode, video over or lower than audio duration, Reset"
+        );
         recReset();
+        // if audio second not matched the video second
       } else if (
-        Math.floor(audioRef.current.currentTime) !==
-        Math.floor(player.getCurrentTime() - startSec)
+        Math.abs(
+          audioRef.current.currentTime - (player.getCurrentTime() - startSec)
+        ) > 1
       ) {
-        console.log("adjust second");
+        console.log(
+          "recResume, record mode, audio second not matched the video second, adjust audio"
+        );
         audioRef.current.currentTime = player.getCurrentTime() - startSec;
         recResume();
       } else {
-        console.log("ok");
+        console.log("recResume, record mode, ok");
         player.playVideo();
         audioRef.current.play();
         console.log(audioRef.current.play());
-        // setTimeout(() => {
-        //   audioRef.current.play();
-        // }, 1000);
       }
     }
   };
 
   const recEnd = () => {
-    setNumberOfLastAction(null);
+    console.log("recEnd");
+    setNumberOfLastAction(3);
     player.seekTo(startSec).pauseVideo();
     stopRecording();
     setEndSec(Math.floor(player.getCurrentTime()));
@@ -208,12 +219,15 @@ const RecordView = () => {
   };
 
   const recReset = () => {
-    player.seekTo(startSec);
+    console.log("recReset");
 
+    player.seekTo(startSec);
     if (sectionType === "record") {
+      console.log("recReset, record");
       setNumberOfLastAction(null);
       stopRecording();
-    } else {
+    } else if (sectionType === "audio") {
+      console.log("recReset, record ");
       audioRef.current.currentTime = 0;
     }
     setStartAction(true);
@@ -222,71 +236,71 @@ const RecordView = () => {
 
   /******** end recFunction  ***********/
 
-  const onStateChange = async (event) => {
+  const onStateChange = (event) => {
+    // setTimeout(() => {
     if (dubbingOption == 2 || sectionType === "audio") {
-      console.log(event.data, "000000000", numberOfLastAction);
+      console.log("step", "1", event.data, numberOfLastAction);
 
-      if (event.data !== numberOfLastAction) {
-        console.log("!!!!!!!!!!!", event.data, "*********");
-        // if (event.data == "3") {
-        //   console.log("oooooooo%%%%%%%%%");
-        //   await setNumberOfLastAction(3);
-        // }
+      if (event.data != numberOfLastAction) {
+        console.log("step", "2", event.data, numberOfLastAction);
+        if (event.data == "3") {
+          console.log("step", "3", event.data, numberOfLastAction);
+          setNumberOfLastAction(3);
+        }
         if (event.data === 1) {
+          console.log("step", "4", event.data, numberOfLastAction);
           if (player.getCurrentTime() - startSec < 1) {
-            console.log("22222222222222222222");
+            console.log("step", "5", event.data, numberOfLastAction);
             recStart();
           } else {
-            console.log(
-              "333333333333333333333",
-              player.getCurrentTime(),
-              startSec
-            );
+            console.log("step", "6", event.data, numberOfLastAction);
             recResume();
           }
         } else if (event.data === 2) {
+          console.log("step", "7", event.data, numberOfLastAction);
           recPause();
         } else if (event.data === 0) {
+          console.log("step", "8", event.data, numberOfLastAction);
           recEnd();
         } else if (
           event.data === 3 &&
           event.target.getCurrentTime() - startSec > 1 &&
           sectionType === "record"
         ) {
-          console.log("444444444444444444444");
+          console.log("step", "9", event.data, numberOfLastAction);
+
           recReset();
         } else if (
           sectionType === "audio" &&
           event.target.getCurrentTime() > 1 &&
           event.data === 3
         ) {
+          console.log("step", "10", event.data, numberOfLastAction);
+
           if (
             player.getCurrentTime() - startSec + 1 >
               audioRef.current.duration ||
             player.getCurrentTime() < startSec
           ) {
+            console.log("step", "11", event.data, numberOfLastAction);
+
             recReset();
           } else {
+            console.log("step", "12", event.data, numberOfLastAction);
             audioRef.current.currentTime = player.getCurrentTime() - startSec;
-            console.log(
-              audioRef.current.duration,
-              "0000000000",
-              audioRef.current.currentTime
-            );
           }
         }
       }
     }
+    // }, 100);
   };
 
-  const handleChange = async (file) => {
+  const handleChange = (file) => {
+    setTheFile(file);
     setNumberOfLastAction(null);
-    setStartAction(true);
     setSectionType("audio");
     player.seekTo(startSec).pauseVideo();
-    setFile(file);
-    // recReset();
-
+    audioRef.current.currentTime = 0;
     setControls(1);
   };
 
@@ -331,16 +345,9 @@ const RecordView = () => {
                       <button onClick={() => recReset()}>recReset</button>
                     </>
                   )}
-                  {sectionType === "audio" &&
-                    (dubbingOption === "2" ? (
-                      <button onClick={() => recordAgain()}>
-                        Record again
-                      </button>
-                    ) : dubbingOption === "1" ? (
-                      <button onClick={() => uploadAgain()}>
-                        Upload again
-                      </button>
-                    ) : null)}
+                  {sectionType === "audio" && dubbingOption === "2" && (
+                    <button onClick={() => recordAgain()}>Record again</button>
+                  )}
                 </>
               )}
 
@@ -369,18 +376,36 @@ const RecordView = () => {
             </div>
           </div>
           {/* <p>{status}</p> */}
+
           <audio
-            // src={mediaBlobUrl}
-            src={file ? URL.createObjectURL(file[0]) : mediaBlobUrl}
+            // src={file ? URL.createObjectURL(file[0]) : mediaBlobUrl }
+            src={theFile && URL.createObjectURL(theFile[0])}
             controls
-            ref={audioRef}
+            ref={uploadSrcRef}
             // style={{ display: "none" }}
           />
+
+          <audio
+            // src={mediaBlobUrl}
+            // src={mediaBlobUrl}
+            // src={file ? URL.createObjectURL(file[0]) : mediaBlobUrl }
+            src={mediaBlobUrl}
+            controls
+            ref={recordAudioRef}
+            // style={{ display: "none" }}
+          />
+
+          {/* <audio
+            src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+            controls
+            ref={audioRef}
+          /> */}
         </div>
       </div>
       {!mic && dubbingOption === "2" && (
         <Inform text="Access the microphone, please" />
       )}
+      <button onClick={() => audioRef.current.play()}>000000000000000</button>
     </Wrapper>
   );
 };
