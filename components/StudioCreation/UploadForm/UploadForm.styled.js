@@ -1,30 +1,53 @@
 import styled from "styled-components";
 const Wrapper = styled.div`
+  display: flex;
+  top: 0;
+  left: 0;
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+  background: var(--gradient1);
+
   .mt {
     margin-top: 10px;
   }
+
   .upForm {
-    width: 90%;
+    background: var(--white-background);
+    width: 320px;
+    min-width: 40vw;
+    max-width:500px
     margin: auto;
+    padding: 15px;
+    border-radius: 5px;
+  }
+
+  form {
     padding: 5px;
     border: 1px solid var(--gradient1);
     border-radius: 5px;
-  }
-  form {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
     max-height: calc(100vh - 200px);
     overflow-y: auto;
-    padding-right: 15px;
-
+    overflow-x: hidden;
     .inputWrapper {
       width: 100%;
       text-align: center;
       margin: 0.5%;
       background: var(--gradient_2);
       border-radius: 5px;
+
+       p {
+    color: red;
+    font-size: var(--smallFont);
+}
+
 
       input,
       textarea,
@@ -78,6 +101,18 @@ const Wrapper = styled.div`
         }
       }
     }
+
+    button.submit {
+    background: var(--primary-background);
+    color: white;
+    border: 0;
+    padding: 5px 30px;
+    border-radius: 5px;
+    font-size: var(--largeFont);
+    margin-bottom: 20px;
+    cursor:pointer;
+}
+
   }
 `;
 export default Wrapper;

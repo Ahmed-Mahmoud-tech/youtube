@@ -6,6 +6,7 @@ import { useRef } from "react";
 import StudioForm from "./Form/StudioForm";
 import Wrapper from "./StudioCreation.styled";
 import Inform from "../Globals/Inform/Inform";
+import UploadForm from "./UploadForm/UploadForm";
 
 // acquiring_media
 import { FileUploader } from "react-drag-drop-files";
@@ -47,10 +48,15 @@ const RecordView = ({
   const [theFile, setTheFile] = useState(mediaBlobUrl);
   const [option, setOption] = useState(opts);
   const [uploadFirst, setUploadFirst] = useState(false);
+  const [finish, setFinish] = useState(true);
 
   const recordAudioRef = useRef();
   const serverAudioRef = useRef();
   const uploadSrcRef = useRef();
+
+  const closeFun = () => {
+    setFinish(false);
+  };
 
   // end second
   useEffect(() => {
@@ -399,7 +405,6 @@ const RecordView = ({
             ref={uploadSrcRef}
             style={{ display: "none" }}
           />
-
           <audio
             src={mediaBlobUrl}
             controls
@@ -411,7 +416,7 @@ const RecordView = ({
             src={serverAudio}
             controls
             ref={serverAudioRef}
-            // style={{ display: "none" }}
+            style={{ display: "none" }}
           />
         </div>
       </div>
@@ -419,6 +424,7 @@ const RecordView = ({
         <Inform text="Access the microphone, please" />
       )}
       {uploadFirst && <Inform text="please upload your audio" />}
+      {finish && <UploadForm closeFun={closeFun} />}
     </Wrapper>
   );
 };

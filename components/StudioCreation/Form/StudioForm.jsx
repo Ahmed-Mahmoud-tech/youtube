@@ -1,26 +1,36 @@
 import React from "react";
 import Wrapper from "./StudioForm.styled";
-import AddInput from "../../Globals/AddInput/AddInput";
 import { useState } from "react";
 import { useEffect } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const StudioForm = ({
+  videoDuration,
   setVideoId,
   setDubbingOption,
   dubbingOption,
   setEndSec,
   setStartSec,
+  values = null,
 }) => {
   const [endMinute, setEndMinute] = useState(0);
   const [endSecond, setEndSecond] = useState(0);
   const [startMinute, setStartMinute] = useState(0);
   const [startSecond, setStartSecond] = useState(0);
+  const [validationObj, setValidationObj] = useState(0);
 
   useEffect(() => {
     setEndSecond(0);
     setEndMinute(0);
     setStartSecond(0);
     setStartMinute(0);
+
+    if (dubbingOption == 1) {
+      setValidationObj(validationWithEnd);
+    } else {
+      setValidationObj(validationWithOutEnd);
+    }
   }, [dubbingOption]);
 
   const getId = (e) => {
@@ -60,20 +70,95 @@ const StudioForm = ({
     setStartSec(totalSecond);
   };
 
+  const validationWithOutEnd = {
+    videoLink: Yup.string()
+      .required("Required!")
+      .test("videoLink", "Invalid link", () => {
+        if (videoDuration > 0) {
+          return true;
+        }
+        return false;
+      }),
+    type: Yup.string().required("Required!"),
+
+    startMinute: Yup.number()
+      .required("Required!")
+      .positive("Should to be Positive")
+      .test(
+        "is-decimal",
+        "Must not be a decimal",
+        (value) => !(value + "").match(/^\d*\.{1}\d*$/)
+      ),
+    startSecond: Yup.number()
+      .required("Required!")
+      .positive("Should to be Positive")
+      .test(
+        "is-decimal",
+        "Must not be a decimal",
+        (value) => !(value + "").match(/^\d*\.{1}\d*$/)
+      ),
+  };
+  const validationWithEnd = {
+    ...validationWithOutEnd,
+    endMinute: Yup.number()
+      .required("Required!")
+      .positive("Should to be Positive")
+      .test(
+        "is-decimal",
+        "Must not be a decimal",
+        (value) => !(value + "").match(/^\d*\.{1}\d*$/)
+      ),
+    endSecond: Yup.number()
+      .required("Required!")
+      .positive("Should to be Positive")
+      .test(
+        "is-decimal",
+        "Must not be a decimal",
+        (value) => !(value + "").match(/^\d*\.{1}\d*$/)
+      ),
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      videoLink: values ? values.videoLink : "",
+      type: values ? values.type : "",
+      startMinute: values ? values.startMinute : "",
+      startSecond: values ? values.startSecond : "",
+      endMinute: values ? values.endMinute : "",
+      endSecond: values ? values.endSecond : "",
+    },
+
+    validationSchema: Yup.object(validationObj),
+
+    onSubmit: (values) => {
+      alert(JSON.stringify(values, null, 2));
+      console.log({
+        validationObj,
+      });
+    },
+  });
+
   return (
     <Wrapper>
       <div className="upForm">
         <div className="title">Create New</div>
 
-        <form action="">
+        <form action="" onSubmit={formik.handleSubmit}>
           <div className="inputWrapper">
             <input
               type="text"
               name="videoLink"
               id="videoLink"
               placeholder="video Link"
-              onChange={(e) => getId(e)}
+              onChange={(e) => {
+                formik.handleChange(e);
+                getId(e);
+              }}
+              value={formik.values.videoLink}
             />
+            {formik.errors.videoLink && formik.touched.videoLink && (
+              <p>{formik.errors.videoLink}</p>
+            )}
           </div>
 
           <div className="inputWrapper">
@@ -83,17 +168,19 @@ const StudioForm = ({
               defaultValue=""
               onChange={(e) => {
                 setDubbingOption(e.target.value);
-                // if (e.target.value == 2) setTheFile(mediaBlobUrl);
+                formik.handleChange(e);
               }}
+              value={formik.values.type}
             >
-              <option value="" disabled>
-                Dubbing Options
-              </option>
+              <option value="">Dubbing Options</option>
               <option value="0">Without Dubbing</option>
               <option value="1">Upload Dubbing</option>
               <option value="2">Record Dubbing</option>
               <option value="7">server audio</option>
             </select>
+            {formik.errors.type && formik.touched.type && (
+              <p>{formik.errors.type}</p>
+            )}
           </div>
 
           <div className="inputWrapper">
@@ -105,22 +192,38 @@ const StudioForm = ({
                   name="startMinute"
                   id="startMinute"
                   placeholder="startMinute"
-                  value={startMinute}
-                  onChange={(e) => startTimeFun(e, "minute")}
+                  // value={startMinute}
+                  onChange={(e) => {
+                    startTimeFun(e, "minute");
+                    formik.handleChange(e);
+                  }}
+                  value={formik.values.startMinute}
                 />
+                {formik.errors.startMinute && formik.touched.startMinute && (
+                  <p>{formik.errors.startMinute}</p>
+                )}
               </div>
+              */*/*/*/*/*/
               <div className="startSecond">
                 <input
                   type="number"
                   name="startSecond"
                   id="startSecond"
                   placeholder="startSecond"
-                  value={startSecond}
-                  onChange={(e) => startTimeFun(e, "second")}
+                  // value={startSecond}
+                  onChange={(e) => {
+                    startTimeFun(e, "second");
+                    formik.handleChange(e);
+                  }}
+                  value={formik.values.startSecond}
                 />
+                {formik.errors.startSecond && formik.touched.startSecond && (
+                  <p>{formik.errors.startSecond}</p>
+                )}
               </div>
             </div>
           </div>
+
           {dubbingOption === "0" && (
             <div className="inputWrapper">
               <div className="realTime">End Time</div>
@@ -131,9 +234,16 @@ const StudioForm = ({
                     name="endMinute"
                     id="endMinute"
                     placeholder="endMinute"
-                    value={endMinute}
-                    onChange={(e) => endTimeFun(e, "minute")}
+                    // value={endMinute}
+                    onChange={(e) => {
+                      endTimeFun(e, "minute");
+                      formik.handleChange(e);
+                    }}
+                    value={formik.values.endMinute}
                   />
+                  {formik.errors.endMinute && formik.touched.endMinute && (
+                    <p>{formik.errors.endMinute}</p>
+                  )}
                 </div>
                 <div className="endSecond">
                   <input
@@ -141,15 +251,22 @@ const StudioForm = ({
                     name="endSecond"
                     id="endSecond"
                     placeholder="endSecond"
-                    value={endSecond}
-                    onChange={(e) => endTimeFun(e, "second")}
+                    // value={endSecond}
+                    onChange={(e) => {
+                      endTimeFun(e, "second");
+                      formik.handleChange(e);
+                    }}
+                    value={formik.values.endSecond}
                   />
+                  {formik.errors.endSecond && formik.touched.endSecond && (
+                    <p>{formik.errors.endSecond}</p>
+                  )}
                 </div>
               </div>
             </div>
           )}
 
-          <button type="button" className="finish">
+          <button type="submit" className="finish">
             Finish
           </button>
         </form>

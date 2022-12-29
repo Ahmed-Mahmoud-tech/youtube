@@ -13,15 +13,17 @@ const Wrapper = styled.div`
       border-radius: 10px;
       margin: 2px;
       position: relative;
-      width: 100%;
+      max-width: 100%;
       justify-content: space-between;
       display: flex;
       .value {
         white-space: nowrap;
         text-overflow: ellipsis;
-        max-width: calc(100% - 45px);
+        max-width: calc(100% - 35px);
         display: block;
         overflow: hidden;
+        font-size: var(--smallFont);
+        line-height: 20px;
       }
 
       span.close {

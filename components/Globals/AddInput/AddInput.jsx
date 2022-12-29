@@ -9,7 +9,7 @@ const AddInput = ({ items, setItems, name }) => {
     setItems(items.filter((item) => item !== items[index]));
   };
   const addItem = () => {
-    itemInput.trim().length > 0 && setItems([...items, itemInput.trim()]);
+    itemInput?.trim().length > 0 && setItems([...items, itemInput.trim()]);
     setItemInput("");
   };
   return (
