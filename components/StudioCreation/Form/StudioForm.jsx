@@ -4,14 +4,20 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
 
 const StudioForm = ({
-  videoDuration,
+  videoTitle,
   setVideoId,
   setDubbingOption,
   dubbingOption,
   setEndSec,
   setStartSec,
+  recordAudio,
+  uploadSrc,
+  setFinish,
+  setCreationData,
+  videoDuration,
   values = null,
 }) => {
   const [endMinute, setEndMinute] = useState(0);
@@ -26,11 +32,15 @@ const StudioForm = ({
     setStartSecond(0);
     setStartMinute(0);
 
-    if (dubbingOption == 1) {
+    if (dubbingOption == 0) {
       setValidationObj(validationWithEnd);
     } else {
       setValidationObj(validationWithOutEnd);
     }
+    formik.values.startSecond = 0;
+    formik.values.startMinute = 0;
+    formik.values.endSecond = "";
+    formik.values.endMinute = "";
   }, [dubbingOption]);
 
   const getId = (e) => {
@@ -45,6 +55,19 @@ const StudioForm = ({
     }
   };
 
+  const warningMassage = (message) => {
+    toast.warn(message, {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+    return false;
+  };
   const endTimeFun = (e, type) => {
     const value = e.target.value ? parseInt(e.target.value) : 0;
     let totalSecond;
@@ -71,19 +94,17 @@ const StudioForm = ({
   };
 
   const validationWithOutEnd = {
-    videoLink: Yup.string()
-      .required("Required!")
-      .test("videoLink", "Invalid link", () => {
-        if (videoDuration > 0) {
-          return true;
-        }
-        return false;
-      }),
+    videoLink: Yup.string().required("Required!"),
+
     type: Yup.string().required("Required!"),
 
     startMinute: Yup.number()
       .required("Required!")
-      .positive("Should to be Positive")
+      .test(
+        "is-positive",
+        "Must not be 0 or more",
+        (value) => parseInt(value) >= 0
+      )
       .test(
         "is-decimal",
         "Must not be a decimal",
@@ -91,18 +112,27 @@ const StudioForm = ({
       ),
     startSecond: Yup.number()
       .required("Required!")
-      .positive("Should to be Positive")
+      .test(
+        "is-positive",
+        "Must not be 0 or more",
+        (value) => parseInt(value) >= 0
+      )
       .test(
         "is-decimal",
         "Must not be a decimal",
         (value) => !(value + "").match(/^\d*\.{1}\d*$/)
       ),
   };
+
   const validationWithEnd = {
     ...validationWithOutEnd,
     endMinute: Yup.number()
       .required("Required!")
-      .positive("Should to be Positive")
+      .test(
+        "is-positive",
+        "Must not be 0 or more",
+        (value) => parseInt(value) >= 0
+      )
       .test(
         "is-decimal",
         "Must not be a decimal",
@@ -110,7 +140,11 @@ const StudioForm = ({
       ),
     endSecond: Yup.number()
       .required("Required!")
-      .positive("Should to be Positive")
+      .test(
+        "is-positive",
+        "Must not be 0 or more",
+        (value) => parseInt(value) >= 0
+      )
       .test(
         "is-decimal",
         "Must not be a decimal",
@@ -131,10 +165,27 @@ const StudioForm = ({
     validationSchema: Yup.object(validationObj),
 
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
-      console.log({
-        validationObj,
-      });
+      if (videoTitle.length <= 0) {
+        warningMassage("The video Link is invalid!");
+      } else if (dubbingOption == 1 && !(uploadSrc.current.duration > 0)) {
+        console.log(uploadSrc.current.duration, "#######");
+        warningMassage("Upload audio first!");
+      } else if (dubbingOption == 2 && !(recordAudio.current.duration > 0)) {
+        warningMassage("Record audio first!");
+      } else if (
+        (dubbingOption == 1 &&
+          uploadSrc.current.duration + startSecond + 5 > videoDuration) ||
+        (dubbingOption == 2 &&
+          recordAudio.current.duration + startSecond + 5 > videoDuration)
+      ) {
+        warningMassage(
+          "The audio from the start second is longer than the video!"
+        );
+      } else {
+        setCreationData(values);
+        setFinish(true);
+        console.log(recordAudio.current.duration, videoDuration, ".00000");
+      }
     },
   });
 
@@ -167,8 +218,25 @@ const StudioForm = ({
               id="type"
               defaultValue=""
               onChange={(e) => {
-                setDubbingOption(e.target.value);
-                formik.handleChange(e);
+                if (
+                  videoTitle.length < 1 &&
+                  e.target.value !== "7" &&
+                  dubbingOption !== undefined
+                ) {
+                  toast.warn("Please add the video link first", {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                  });
+                } else {
+                  setDubbingOption(e.target.value);
+                  formik.handleChange(e);
+                }
               }}
               value={formik.values.type}
             >
@@ -191,7 +259,7 @@ const StudioForm = ({
                   type="number"
                   name="startMinute"
                   id="startMinute"
-                  placeholder="startMinute"
+                  placeholder="Start Minute"
                   // value={startMinute}
                   onChange={(e) => {
                     startTimeFun(e, "minute");
@@ -203,13 +271,13 @@ const StudioForm = ({
                   <p>{formik.errors.startMinute}</p>
                 )}
               </div>
-              */*/*/*/*/*/
+
               <div className="startSecond">
                 <input
                   type="number"
                   name="startSecond"
                   id="startSecond"
-                  placeholder="startSecond"
+                  placeholder="Start Second"
                   // value={startSecond}
                   onChange={(e) => {
                     startTimeFun(e, "second");
@@ -233,7 +301,7 @@ const StudioForm = ({
                     type="number"
                     name="endMinute"
                     id="endMinute"
-                    placeholder="endMinute"
+                    placeholder="End Minute"
                     // value={endMinute}
                     onChange={(e) => {
                       endTimeFun(e, "minute");
@@ -250,7 +318,7 @@ const StudioForm = ({
                     type="number"
                     name="endSecond"
                     id="endSecond"
-                    placeholder="endSecond"
+                    placeholder="End Second"
                     // value={endSecond}
                     onChange={(e) => {
                       endTimeFun(e, "second");

@@ -22,6 +22,11 @@ const Wrapper = styled.div`
       background: var(--gradient_2);
       border-radius: 5px;
 
+      p {
+        color: red;
+        font-size: var(--smallFont);
+      }
+
       .realTime {
         text-align: left;
         margin: 10px 5px 5px;

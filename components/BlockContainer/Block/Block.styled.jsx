@@ -7,14 +7,22 @@ const Wrapper = styled.div`
   }
   &:hover {
     filter: drop-shadow(2px 4px 6px var(--gray-background));
-    cursor: pointer;
   }
+
   .avatar {
     position: relative;
     height: 36px;
     min-width: 36px;
     overflow: hidden;
     border-radius: 50%;
+  }
+  .blockLink {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 1;
   }
   .videoImage {
     position: relative;
@@ -41,6 +49,20 @@ const Wrapper = styled.div`
       svg {
         font-size: var(--hugeFont);
       }
+
+      .infoWrapper.delete {
+        background: var(--white-color);
+        position: relative;
+        top: 14%;
+        color: var(--primary-background);
+        display: flex;
+        border-radius: 5px;
+        box-shadow: 1px 1px 1px 1px var(--gradient0);
+        cursor: pointer;
+        svg {
+          width: 30px;
+        }
+      }
     }
 
     @media (min-width: 1300px) {
@@ -48,6 +70,9 @@ const Wrapper = styled.div`
       height: 175px;
     }
     .placeHolder {
+      .blockLink {
+        z-index: -1;
+      }
       transition: 0.2s;
       width: 100%;
       position: absolute;

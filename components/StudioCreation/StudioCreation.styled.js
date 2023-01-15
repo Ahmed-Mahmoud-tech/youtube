@@ -47,5 +47,30 @@ const Wrapper = styled.div`
       white-space: nowrap;
     }
   }
+  .buttonContainer button:hover {
+    box-shadow: 1px 1px 5px 1px #838383;
+  }
+  .buttonContainer {
+    display: flex;
+    justify-content: center;
+
+    button {
+      background: var(--gradient_1);
+      /* background: var(--black-background); */
+      border: 0;
+      color: var(--primary-background);
+      padding: 5px 10px;
+      margin: 10px 10px;
+      border-radius: 5px;
+      font-size: var(--hugeFont);
+      cursor: pointer;
+      display: flex;
+    }
+
+    .textbutton {
+      font-size: var(--normalFont);
+      font-weight: bold;
+    }
+  }
 `;
 export default Wrapper;

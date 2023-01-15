@@ -29,27 +29,50 @@ const Block = ({
   const dispatch = useDispatch();
 
   const removeVideo = () => {
-    console.log("hamada");
+    console.log("remove video");
   };
-  const showPop = () => {
-    dispatch(changeConfirmationFun(removeVideo));
-    dispatch(changePop("confirmation"));
-    dispatch(changeMessage("Are you sure to remove this video?"));
+  const removeList = () => {
+    console.log("remove list");
+  };
+
+  const showPop = (type) => {
+    if (type === "video") {
+      dispatch(changeConfirmationFun(removeVideo));
+      dispatch(changePop("confirmation"));
+      dispatch(changeMessage("Are you sure to remove this video?"));
+    } else {
+      dispatch(changeConfirmationFun(removeList));
+      dispatch(changePop("confirmation"));
+      dispatch(changeMessage("Are you sure to remove this list?"));
+    }
   };
 
   return (
     <Wrapper>
-      <Link href={link} className="imageContainer">
+      <div className="imageContainer">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <div className="videoImage">
           {listNumber > 0 && (
-            <div className="listNumber">
-              {listNumber}
-              <BiListCheck />
-            </div>
+            <>
+              <Link href={link} className="blockLink"></Link>
+
+              <div className="listNumber">
+                {listNumber}
+                <BiListCheck />
+                {remove && (
+                  <div
+                    className="infoWrapper delete"
+                    onClick={() => showPop("list")}
+                  >
+                    <MdOutlineDelete />
+                  </div>
+                )}
+              </div>
+            </>
           )}
           {listNumber == 0 && (
             <div className="placeHolder">
+              <Link href={link} className="blockLink"></Link>
               <div className="infoWrapper">
                 <BiLike /> <span className="word">like</span>
                 <span className="number">{like}</span>
@@ -71,8 +94,11 @@ const Block = ({
                   <FaPlay />
                 </span>
               </div>
-              {remove && (
-                <div className="infoWrapper delete" onClick={() => showPop()}>
+              {true && (
+                <div
+                  className="infoWrapper delete"
+                  onClick={() => showPop("video")}
+                >
                   <MdOutlineDelete /> <span className="word">Delete</span>
                   <span className="number"></span>
                 </div>
@@ -81,7 +107,7 @@ const Block = ({
           )}
           <Image src={videoImage} alt="vedicAlt" crossOrigin="anonymous" fill />
         </div>
-      </Link>
+      </div>
       <div className="details">
         <div className="avatar">
           <Image src={channelImage} alt="profile" fill />

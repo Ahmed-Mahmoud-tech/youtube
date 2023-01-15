@@ -6,10 +6,10 @@ import { useOutside } from "../../../utilities/main";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-const UploadForm = ({ closeFun, values = null }) => {
+const UploadForm = ({ closeFun, creationData, values = null }) => {
   const close = useRef();
 
-  const [list, setList] = useState([]);
+  const [list, setList] = useState(["list1", "list2", "list3"]);
   const [tag, setTag] = useState([]);
   useOutside(close, closeFun);
 
@@ -59,6 +59,7 @@ const UploadForm = ({ closeFun, values = null }) => {
       dubbingLanguage: values ? values.dubbingLanguage : "",
       videoLanguage: values ? values.videoLanguage : "",
       category: values ? values.category : "",
+      list: values ? values.list : "",
     },
     validationSchema: Yup.object({
       title: Yup.string().required("Required!"),
@@ -69,10 +70,9 @@ const UploadForm = ({ closeFun, values = null }) => {
       list: Yup.string().required("Required!"),
     }),
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
-      // add tags
-      // old form
-      // send request
+      values.tag = tag;
+      const finalData = { ...values, ...creationData };
+      console.log("send video Data", { finalData });
     },
   });
 
@@ -93,6 +93,7 @@ const UploadForm = ({ closeFun, values = null }) => {
               <p>{formik.errors.title}</p>
             )}
           </div>
+
           <div className="inputWrapper">
             <textarea
               name="description"
@@ -123,29 +124,30 @@ const UploadForm = ({ closeFun, values = null }) => {
               <p>{formik.errors.videoLanguage}</p>
             )}
           </div>
-
-          <div className="inputWrapper">
-            <select
-              name="dubbingLanguage"
-              id="dubbingLanguage"
-              value={formik.values.dubbingLanguage}
-              onChange={formik.handleChange}
-            >
-              <option value="" disabled>
-                Dubbing Language
-              </option>
-              {languages.map((value, index) => (
-                <option value={index} key={index}>
-                  {value}
+          {console.log(creationData.type)}
+          {creationData.type != 0 && (
+            <div className="inputWrapper">
+              <select
+                name="dubbingLanguage"
+                id="dubbingLanguage"
+                value={formik.values.dubbingLanguage}
+                onChange={formik.handleChange}
+              >
+                <option value="" disabled>
+                  Dubbing Language
                 </option>
-              ))}
-            </select>
-            {formik.errors.dubbingLanguage &&
-              formik.touched.dubbingLanguage && (
-                <p>{formik.errors.dubbingLanguage}</p>
-              )}
-          </div>
-
+                {languages.map((value, index) => (
+                  <option value={index} key={index}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+              {formik.errors.dubbingLanguage &&
+                formik.touched.dubbingLanguage && (
+                  <p>{formik.errors.dubbingLanguage}</p>
+                )}
+            </div>
+          )}
           <div className="inputWrapper">
             <select
               name="category"
@@ -173,12 +175,12 @@ const UploadForm = ({ closeFun, values = null }) => {
               name="list"
               value={formik.values.list}
               onChange={formik.handleChange}
+              autoComplete="off"
             />
             <datalist id="lists">
               {list.map((item, key) => (
                 <option key={key}>{item}</option>
               ))}
-              <option>Other</option>
             </datalist>
             {formik.errors.list && formik.touched.list && (
               <p>{formik.errors.list}</p>

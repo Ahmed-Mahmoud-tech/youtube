@@ -5,8 +5,8 @@ import BlockContainer from "../components/BlockContainer/BlockContainer";
 export default function Yourlist() {
   const data = [
     {
-      listNumber: 5,
-      remove: false,
+      listNumber: 10,
+      remove: true,
       like: 35,
       share: 35,
       views: 35,

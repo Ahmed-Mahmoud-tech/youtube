@@ -13,7 +13,7 @@ const Wrapper = styled.div`
 
   .info {
     background-color: var(--white-background);
-    color: var(--black-color);
+    color: var(--primary-background);
     padding: 10px;
     border-radius: 10px;
     font-weight: bold;
