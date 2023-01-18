@@ -4,49 +4,18 @@ import Image from "next/image";
 import Wrapper from "./Comments.styled";
 import { FaThumbsDown, FaThumbsUp, FaReplyAll } from "react-icons/fa";
 
-const Comments = ({
-  id = 100,
-  src = "https://ashallendesign.ams3.cdn.digitaloceanspaces.com/rMbsGOyK6i1KjNkbXff8qLohzM1nWQA8HNGwHF0J.png",
-  name = "Ahmed Mahmoud Ahmed",
-  comment = "this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this ",
-  likeNumber = 20,
-  disLikeNumber = 10,
-  comments = [
-    {
-      id: 101,
-      src: "https://ashallendesign.ams3.cdn.digitaloceanspaces.com/rMbsGOyK6i1KjNkbXff8qLohzM1nWQA8HNGwHF0J.png",
-      name: "Ahmed Mahmoud Ahmed",
-      comment:
-        "this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this ",
-      likeNumber: 20,
-      disLikeNumber: 10,
-      comments: [
-        {
-          id: 102,
-          src: "https://ashallendesign.ams3.cdn.digitaloceanspaces.com/rMbsGOyK6i1KjNkbXff8qLohzM1nWQA8HNGwHF0J.png",
-          name: "Ahmed Mahmoud Ahmed",
-          comment:
-            "this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this ",
-          likeNumber: 20,
-          disLikeNumber: 10,
-          comments: [
-            {
-              id: 103,
-              src: "https://ashallendesign.ams3.cdn.digitaloceanspaces.com/rMbsGOyK6i1KjNkbXff8qLohzM1nWQA8HNGwHF0J.png",
-              name: "Ahmed Mahmoud Ahmed",
-              comment:
-                "this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this is my comment this ",
-              likeNumber: 20,
-              disLikeNumber: 10,
-              comments: [],
-            },
-          ],
-        },
-      ],
-    },
-  ],
-}) => {
-  const generateComment = (id, src, name, comment, comments, parent) => {
+const Comments = ({ VideoComments }) => {
+  console.log({ VideoComments });
+  const generateComment = (
+    id,
+    src,
+    name,
+    comment,
+    comments,
+    likeNumber,
+    disLikeNumber,
+    parent
+  ) => {
     const [like, setLike] = useState(0);
     const [replay, setReplay] = useState(false);
     const [replayText, setReplayText] = useState("");
@@ -138,6 +107,8 @@ const Comments = ({
                       comments[index].name,
                       comments[index].comment,
                       comments[index].comments,
+                      comments[index].likeNumber,
+                      comments[index].disLikeNumber,
                       false
                     )}
                   </div>
@@ -151,7 +122,18 @@ const Comments = ({
   };
 
   return (
-    <Wrapper>{generateComment(id, src, name, comment, comments, true)}</Wrapper>
+    <Wrapper>
+      {generateComment(
+        VideoComments.id,
+        VideoComments.src,
+        VideoComments.name,
+        VideoComments.comment,
+        VideoComments.comments,
+        VideoComments.likeNumber,
+        VideoComments.disLikeNumber,
+        true
+      )}
+    </Wrapper>
   );
 };
 

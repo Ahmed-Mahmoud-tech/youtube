@@ -1,16 +1,17 @@
 import styled from "styled-components";
 const Wrapper = styled.div`
   .commentWrapper {
-    .info {
-      max-width: calc(100% - 50px);
-    }
-
     display: flex;
     margin-top: 10px;
     align-items: center;
     justify-content: flex-start;
     align-items: flex-start;
     margin-right: 10px;
+
+    .info {
+      max-width: calc(100% - 50px);
+    }
+
     .name {
       font-size: var(--normalFont);
       font-weight: bold;
