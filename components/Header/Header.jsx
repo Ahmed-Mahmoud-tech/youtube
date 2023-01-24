@@ -21,9 +21,10 @@ import {
   BiLogOutCircle,
   BiSupport,
 } from "react-icons/bi";
+
 import { MdOutlineSubscriptions } from "react-icons/md";
 import { SlSettings } from "react-icons/sl";
-import { FaHandsHelping } from "react-icons/fa";
+import { FaHandsHelping, FaBusinessTime } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineLightMode, MdOutlineDarkMode } from "react-icons/md";
 import { useOutside } from "../../utilities/main";
@@ -79,6 +80,12 @@ export default function Header() {
       text: "Likes",
       icon: <BiLike />,
     },
+
+    {
+      link: "/",
+      text: "Watch Later",
+      icon: <FaBusinessTime />,
+    },
     {
       link: "/",
       text: "Subscribe",
@@ -104,11 +111,11 @@ export default function Header() {
       text: "Create Video",
       icon: <BiVideoPlus />,
     },
-    {
-      link: "/",
-      text: "Setting",
-      icon: <SlSettings />,
-    },
+    // {
+    //   link: "/",
+    //   text: "Setting",
+    //   icon: <SlSettings />,
+    // },
     {
       link: "/",
       text: "Support Us",

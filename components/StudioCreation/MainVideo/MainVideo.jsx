@@ -28,7 +28,7 @@ const MainVideo = ({
   setVideoTitle,
   sectionType,
   setSectionType,
-  // setVideoDuration,
+  setVideoDuration,
   numberOfLastAction,
   setNumberOfLastAction,
   startAction,
@@ -55,7 +55,7 @@ const MainVideo = ({
     });
     setVideoTitle(event.target.videoTitle);
     console.log("000000.0000,", event.target.videoTitle);
-    // setVideoDuration(event.target.getDuration());
+    setVideoDuration && setVideoDuration(event.target.getDuration());
   };
 
   const recordAgain = () => {

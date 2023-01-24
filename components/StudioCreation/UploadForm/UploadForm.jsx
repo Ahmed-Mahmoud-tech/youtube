@@ -56,6 +56,7 @@ const UploadForm = ({ closeFun, creationData, values = null }) => {
     initialValues: {
       title: values ? values.title : "",
       description: values ? values.description : "",
+      notify: values ? values.notify : "",
       dubbingLanguage: values ? values.dubbingLanguage : "",
       videoLanguage: values ? values.videoLanguage : "",
       category: values ? values.category : "",
@@ -64,6 +65,7 @@ const UploadForm = ({ closeFun, creationData, values = null }) => {
     validationSchema: Yup.object({
       title: Yup.string().required("Required!"),
       description: Yup.string().required("Required!"),
+      notify: Yup.string().required("Required!"),
       dubbingLanguage: Yup.string().required("Required!"),
       videoLanguage: Yup.string().required("Required!"),
       category: Yup.string().required("Required!"),
@@ -106,6 +108,7 @@ const UploadForm = ({ closeFun, creationData, values = null }) => {
               <p>{formik.errors.description}</p>
             )}
           </div>
+
           <div className="inputWrapper">
             <select
               name="videoLanguage"
@@ -184,6 +187,22 @@ const UploadForm = ({ closeFun, creationData, values = null }) => {
             </datalist>
             {formik.errors.list && formik.touched.list && (
               <p>{formik.errors.list}</p>
+            )}
+          </div>
+          <div className="inputWrapper">
+            <h6>
+              This notification will be displayed before the video you should
+              add the important information if exist
+            </h6>
+            <textarea
+              name="notify"
+              id="notify"
+              placeholder="notification"
+              value={formik.values.notify}
+              onChange={formik.handleChange}
+            />
+            {formik.errors.notify && formik.touched.notify && (
+              <p>{formik.errors.notify}</p>
             )}
           </div>
           <div className="inputWrapper">

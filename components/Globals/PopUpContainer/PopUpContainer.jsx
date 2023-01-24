@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { changePop } from "../../../store/slices/style";
 import { useOutside } from "../../../utilities/main";
 import Confirmation from "./Confirmation/Confirmation";
-import ReactDOM from "react-dom";
 
 const PopUpContainer = ({ content }) => {
   const confirmationMessage = useSelector(

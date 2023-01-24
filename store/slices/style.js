@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import Video from "../../components/Globals/PopUpContainer/Video/Video";
 const initialState = {
   mode: true,
   popUpContent: "",
@@ -20,8 +19,6 @@ export const styleReducer = createSlice({
     },
     changeComponent: (state, action) => {
       state.currentComponent = action.payload;
-      console.log(action.payload, "000000000000000000");
-      console.log(Video, "00000000000000000!!!0");
     },
     changeMessage: (state, action) => {
       state.confirmationMessage = action.payload;

@@ -47,7 +47,9 @@ const Wrapper = styled.div`
     color: red;
     font-size: var(--smallFont);
 }
-
+h6 {
+    margin: 3px 0;
+}
 
       input,
       textarea,

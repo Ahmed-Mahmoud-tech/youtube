@@ -6,15 +6,24 @@ const Wrapper = styled.div`
   margin: 20px;
 
   .right {
+    @media (min-width: 1250px) {
+      width: 70%;
+    }
     width: 60%;
-    @media (max-width: 768px) {
+    @media (max-width: 1000px) {
       width: 100%;
     }
   }
 
   .left {
-    background: yellow;
     flex-grow: 1;
+    @media (min-width: 1250px) {
+      width: 30%;
+    }
+    width: 40%;
+    @media (max-width: 1000px) {
+      width: 100%;
+    }
   }
 
   /********************* */

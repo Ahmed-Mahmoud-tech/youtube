@@ -4,6 +4,7 @@ const Wrapper = styled.div`
     font-size: var(--hugeFont);
     margin: 30px auto 20px;
     width: 300px;
+    max-width: 90%;
     text-align: center;
     border-bottom: 4px solid var(--primary-background);
   }

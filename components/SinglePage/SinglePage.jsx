@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Wrapper from "./SinglePage.styled";
-import SingleVideo from "./SingleVideo/SingleVideo";
 import Comments from "./Comments/Comments";
 import Related from "./Related/Related";
 import MainVideo from "../StudioCreation/MainVideo/MainVideo";
@@ -18,15 +17,19 @@ import {
   FaEye,
   FaHandsHelping,
   FaCoffee,
+  FaBusinessTime,
 } from "react-icons/fa";
 
 import { BiDonateHeart } from "react-icons/bi";
 import { useDispatch } from "react-redux";
 import { changePop, changeComponent } from "../../store/slices/style";
+import Notification from "../Globals/Notification/Notification";
 
 const SinglePage = () => {
   const dispatch = useDispatch();
-
+  const [notification, setNotification] = useState(
+    "This is my notification and will be removed from the domThis is my notification and will be removed from the domThis is my notification and will be removed from the domThis is my notification and will be removed from the domThis is my notification and will be removed from the dom"
+  );
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState();
   const [commentText, setCommentText] = useState("");
@@ -91,7 +94,6 @@ const SinglePage = () => {
       ],
     },
   });
-
   const [videoTitle, setVideoTitle] = useState("");
   const [numberOfLastAction, setNumberOfLastAction] = useState();
   const [player, setPlayer] = useState();
@@ -100,6 +102,7 @@ const SinglePage = () => {
   const [videoWidth, setVideoWidth] = useState(0.59);
   const audioRef = useRef();
   const [like, setLike] = useState(0);
+  const [later, setLater] = useState(false);
   const [commentStatus, setCommentStatus] = useState(false);
   const [authorInfo, setAuthorInfo] = useState({
     donateLink: "https://ko-fi.com/langtupe",
@@ -123,6 +126,10 @@ const SinglePage = () => {
     like != -1 ? setLike(-1) : setLike(0);
     // send request increase or decrease
   };
+  const setLaterFun = (id) => {
+    setLater(!later);
+    // send request
+  };
 
   const sumitForm = (e) => {
     e.preventDefault();
@@ -143,8 +150,18 @@ const SinglePage = () => {
     dispatch(changeComponent(Report));
   };
 
+  const showNotification = () => {
+    dispatch(changePop("notification"));
+    dispatch(changeComponent(() => Notification(notification)));
+  };
+
   useEffect(() => {
-    window.innerWidth < 768 && setVideoWidth(0.94);
+    window.innerWidth > 1250
+      ? setVideoWidth(0.69)
+      : window.innerWidth > 1000
+      ? setVideoWidth(0.585)
+      : setVideoWidth(0.96);
+    notification && showNotification();
   }, []);
 
   return (
@@ -254,20 +271,20 @@ const SinglePage = () => {
                   <FaThumbsDown />
                   <span className="number">{videoInfo.disLikeNumber}</span>
                 </span>
-                <span
-                  className=""
-                  onClick={openShare}
-                  style={{ color: "var(--primary-background)" }}
-                >
+                <span className="" onClick={openShare}>
                   <FaShareAlt />
                   <span className="number">Share</span>
                 </span>
-
                 <span
-                  className="disLike"
-                  onClick={openReport}
-                  style={{ color: "var(--primary-background)" }}
+                  className=""
+                  onClick={setLaterFun}
+                  style={{ color: later && "var(--primary-background)" }}
                 >
+                  <FaBusinessTime />
+                  <span className="number">Watch later</span>
+                </span>
+
+                <span className="disLike" onClick={openReport}>
                   <FaFlag />
                   <span className="number">Report</span>
                 </span>
@@ -278,7 +295,6 @@ const SinglePage = () => {
                     dispatch(changeComponent(Video));
                     dispatch(changePop("component"));
                   }}
-                  style={{ color: "var(--primary-background)" }}
                 >
                   <FaHandsHelping />
                   <span className="number">Support Me</span>
@@ -289,7 +305,6 @@ const SinglePage = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="disLike"
-                  style={{ color: "var(--primary-background)" }}
                 >
                   <FaCoffee />
                   <span className="number">Buy me a Coffee</span>

@@ -5,7 +5,7 @@ import Wrapper from "./Comments.styled";
 import { FaThumbsDown, FaThumbsUp, FaReplyAll } from "react-icons/fa";
 
 const Comments = ({ VideoComments }) => {
-  console.log({ VideoComments });
+  // console.log({ VideoComments });
   const generateComment = (
     id,
     src,

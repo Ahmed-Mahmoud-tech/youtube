@@ -1,16 +1,19 @@
 import React from "react";
 import Wrapper from "./Report.styled";
 import { useState } from "react";
+import { changePop } from "../../../store/slices/style";
+import { useDispatch } from "react-redux";
 
 const Report = () => {
   const [commentText, setCommentText] = useState("");
+  const dispatch = useDispatch();
 
   const sumitForm = (e) => {
     e.preventDefault();
     if (commentText.trim()) {
       // send replay
     }
-    setCommentStatus(false);
+    dispatch(changePop(""));
     setCommentText("");
   };
 

@@ -38,10 +38,14 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: var(--black-color);
   background: var(--white-background);
+  min-height:100vh;
   /* color: var(--white-color);
   background: var(--black-background); */
 }
+#__next{
+  min-height:100vh;
 
+}
 
 * {
   box-sizing: border-box;
@@ -71,9 +75,21 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+  user-drag: none;  
+   user-select: none;
+   -moz-user-select: none;
+   -webkit-user-drag: none;
+   -webkit-user-select: none;
+   -ms-user-select: none;
 }
 img {
   max-width: 100%;
+  user-drag: none;  
+   user-select: none;
+   -moz-user-select: none;
+   -webkit-user-drag: none;
+   -webkit-user-select: none;
+   -ms-user-select: none;
 }
 
 p {

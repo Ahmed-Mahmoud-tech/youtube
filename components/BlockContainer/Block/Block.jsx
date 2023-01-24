@@ -25,6 +25,7 @@ const Block = ({
   channel,
   date,
   nativeVideo,
+  index,
 }) => {
   const dispatch = useDispatch();
 
@@ -117,7 +118,7 @@ const Block = ({
           <span className="channel">{channel}</span>
           <span className="date">{date}</span>
           <a href={nativeVideo} className="nativeVideo">
-            native video
+            native video 00{index}
           </a>
         </div>
       </div>

@@ -176,10 +176,17 @@ const StudioForm = ({
         (dubbingOption == 1 &&
           uploadSrc.current.duration + startSecond + 5 > videoDuration) ||
         (dubbingOption == 2 &&
-          recordAudio.current.duration + startSecond + 5 > videoDuration)
+          recordAudio.current.duration + startSecond + 5 > videoDuration &&
+          recordAudio.current.duration !== Infinity)
       ) {
         warningMassage(
           "The audio from the start second is longer than the video!"
+        );
+        console.log(
+          dubbingOption,
+          recordAudio.current.duration,
+          startSecond,
+          videoDuration
         );
       } else {
         setCreationData(values);

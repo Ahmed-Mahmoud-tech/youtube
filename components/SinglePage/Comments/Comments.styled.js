@@ -1,5 +1,8 @@
 import styled from "styled-components";
 const Wrapper = styled.div`
+  border-bottom: 1px solid var(--gradient0);
+  margin-bottom: 30px;
+  padding-bottom: 15px;
   .commentWrapper {
     display: flex;
     margin-top: 10px;

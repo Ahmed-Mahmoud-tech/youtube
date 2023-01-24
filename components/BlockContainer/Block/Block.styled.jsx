@@ -53,7 +53,7 @@ const Wrapper = styled.div`
       .infoWrapper.delete {
         background: var(--white-color);
         position: relative;
-        top: 14%;
+        top: 1vw;
         color: var(--primary-background);
         display: flex;
         border-radius: 5px;

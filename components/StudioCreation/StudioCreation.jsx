@@ -28,7 +28,7 @@ const StudioCreation = ({
     mediaBlobUrl,
   } = useReactMediaRecorder({ video: false });
 
-  // console.log("dddddddddddddd", useReactMediaRecorder({ video: false }));
+  const [videoWidth, setVideoWidth] = useState(0.6);
   const [videoId, setVideoId] = useState("");
   const [player, setPlayer] = useState();
   const [startSec, setStartSec] = useState(0);
@@ -185,7 +185,7 @@ const StudioCreation = ({
         <div className="factory">
           <div className="videoContainer">
             <MainVideo
-              videoWidth={0.6}
+              videoWidth={videoWidth}
               dubbingOption={dubbingOption}
               option={option}
               videoId={videoId}
@@ -194,7 +194,6 @@ const StudioCreation = ({
               theFile={theFile}
               setTheFile={setTheFile}
               audioRef={audioRef}
-              setAudioRef={setAudioRef}
               startSec={startSec}
               setVideoTitle={setVideoTitle}
               sectionType={sectionType}
@@ -226,7 +225,7 @@ const StudioCreation = ({
             src={mediaBlobUrl}
             controls
             ref={recordAudioRef}
-            // style={{ display: "none" }}
+            style={{ display: "none" }}
           />
           <audio
             src={serverAudio}
