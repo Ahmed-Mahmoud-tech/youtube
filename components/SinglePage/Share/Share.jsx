@@ -9,7 +9,7 @@ import {
   FaTwitter,
   FaRedditAlien,
 } from "react-icons/fa";
-import Wrapper from "./share.styled";
+import Wrapper from "./Share.styled";
 
 const Share = () => {
   return (
