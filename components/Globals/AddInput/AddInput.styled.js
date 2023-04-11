@@ -37,7 +37,7 @@ const Wrapper = styled.div`
           position: relative;
           top: 2px;
           font-weight: bold;
-          stroke-width: 0.7px;
+          strokewidth: 0.7px;
         }
       }
     }

@@ -4,6 +4,7 @@ const nextConfig = {
   images: {
     domains: [
       "cdn.pixabay.com",
+      "img.youtube.com",
       "ashallendesign.ams3.cdn.digitaloceanspaces.com",
     ],
   },

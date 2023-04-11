@@ -4,11 +4,13 @@ import AddInput from "../../Globals/AddInput/AddInput";
 import { useState, useRef } from "react";
 import { useOutside } from "../../../utilities/main";
 import { useFormik } from "formik";
+import useRequest from "../../../axios/apis/useRequest";
+
 import * as Yup from "yup";
 
 const UploadForm = ({ closeFun, creationData, values = null }) => {
   const close = useRef();
-
+  const { addVideo } = useRequest();
   const [list, setList] = useState(["list1", "list2", "list3"]);
   const [tag, setTag] = useState([]);
   useOutside(close, closeFun);
@@ -71,10 +73,23 @@ const UploadForm = ({ closeFun, creationData, values = null }) => {
       category: Yup.string().required("Required!"),
       list: Yup.string().required("Required!"),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       values.tag = tag;
       const finalData = { ...values, ...creationData };
-      console.log("send video Data", { finalData });
+      await console.log("send video Data", { finalData });
+      const formData = new FormData();
+      Object.keys(finalData).map((key, index) => {
+        formData.append(key, finalData[key]);
+      });
+      addVideo(formData);
+      // axios
+      //   .post("http://localhost:5000/api/video", formData)
+      //   .then((response) => {
+      //     console.log(response.data);
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
     },
   });
 
@@ -114,8 +129,7 @@ const UploadForm = ({ closeFun, creationData, values = null }) => {
               name="videoLanguage"
               id="videoLanguage"
               value={formik.values.videoLanguage}
-              onChange={formik.handleChange}
-            >
+              onChange={formik.handleChange}>
               <option value="">Video Language</option>
               {languages.map((value, index) => (
                 <option value={index} key={index}>
@@ -134,8 +148,7 @@ const UploadForm = ({ closeFun, creationData, values = null }) => {
                 name="dubbingLanguage"
                 id="dubbingLanguage"
                 value={formik.values.dubbingLanguage}
-                onChange={formik.handleChange}
-              >
+                onChange={formik.handleChange}>
                 <option value="" disabled>
                   Dubbing Language
                 </option>
@@ -156,8 +169,7 @@ const UploadForm = ({ closeFun, creationData, values = null }) => {
               name="category"
               id="category"
               value={formik.values.category}
-              onChange={formik.handleChange}
-            >
+              onChange={formik.handleChange}>
               <option value="">Category</option>
               {categories.map((value, index) => (
                 <option value={index} key={index}>

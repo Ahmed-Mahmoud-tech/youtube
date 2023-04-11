@@ -29,7 +29,11 @@ const GlobalStyle = createGlobalStyle`
   --gradient1:${gradient1};
   --gradient2:${gradient2};
 }
+/********************* */
 
+
+
+  /****************** */
 html,
 body {
   padding: 0;
@@ -96,6 +100,12 @@ p {
   margin: 0;
 }
  
+.ValidationErrorMessage{
+  color:red;
+  font-size:var(--smallFont);
+    margin-top: -3px;
+    margin-bottom: 3px;
+ }
 `;
 
 export default GlobalStyle;

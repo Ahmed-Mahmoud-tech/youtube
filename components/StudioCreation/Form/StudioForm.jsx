@@ -37,6 +37,7 @@ const StudioForm = ({
     } else {
       setValidationObj(validationWithOutEnd);
     }
+
     formik.values.startSecond = 0;
     formik.values.startMinute = 0;
     formik.values.endSecond = "";
@@ -54,7 +55,6 @@ const StudioForm = ({
       console.log({ video_id });
     }
   };
-
   const warningMassage = (message) => {
     toast.warn(message, {
       position: "top-center",
@@ -189,9 +189,20 @@ const StudioForm = ({
           videoDuration
         );
       } else {
-        setCreationData(values);
-        setFinish(true);
-        console.log(recordAudio.current.duration, videoDuration, ".00000");
+        let srcFile;
+        const audio =
+          values.type == 1
+            ? (srcFile = uploadSrc.current.currentSrc)
+            : values.type == 2
+            ? (srcFile = recordAudio.current.currentSrc)
+            : null;
+        fetch(audio)
+          .then((response) => response.blob())
+          .then((audioBlob) => {
+            setCreationData({ ...values, blob: audioBlob });
+            setFinish(true);
+            console.log(recordAudio.current.duration, videoDuration, ".00000");
+          });
       }
     },
   });

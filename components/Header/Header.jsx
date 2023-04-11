@@ -23,11 +23,13 @@ import {
 } from "react-icons/bi";
 
 import { MdOutlineSubscriptions } from "react-icons/md";
-import { SlSettings } from "react-icons/sl";
 import { FaHandsHelping, FaBusinessTime } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineLightMode, MdOutlineDarkMode } from "react-icons/md";
 import { useOutside } from "../../utilities/main";
+
+import useRequest from "../../axios/apis/useRequest";
+import { searchVideos } from "../../store/slices/videoResult";
 
 export default function Header() {
   const [isMobile, setIsMobile] = useState(false);
@@ -38,6 +40,7 @@ export default function Header() {
   const [modeLink, setModeLink] = useState();
   const [modeText, setModeText] = useState();
   const [modeIcon, setModeIcon] = useState();
+  const [mainSearchValue, setMainSearchValue] = useState();
 
   const profileButton = useRef(null);
   const menuButton = useRef(null);
@@ -48,6 +51,8 @@ export default function Header() {
   const changeModeFun = () => {
     dispatch(changeMode(!currentMode));
   };
+
+  const { mainSearch } = useRequest();
 
   const closeProfile = () => {
     setProfile(false);
@@ -168,8 +173,7 @@ export default function Header() {
           <span
             className="menuIcon"
             onClick={() => setMainMenu(true)}
-            ref={menuButton}
-          >
+            ref={menuButton}>
             <BiMenu className="menu" />
             <PopMenu status={mainMenu} data={leftData} />
           </span>
@@ -184,26 +188,40 @@ export default function Header() {
         <div
           className={`searchParent ${isMobile && "isMobile"} ${
             searchPop && "searchPop"
-          }`}
-        >
-          <div className="searchCont" ref={searchButton}>
-            <input type="text" className="searchForm" />
-            <button
-              type="button"
-              className="mic"
-              onClick={() => isMobile && setSearchPop(true)}
-            >
+          }`}>
+          <form
+            className="searchCont"
+            ref={searchButton}
+            action=""
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (
+                ((isMobile && searchPop) || !isMobile) &&
+                mainSearchValue.trim()
+              ) {
+                const data = await mainSearch(mainSearchValue);
+                dispatch(searchVideos(data.data));
+              } else if (isMobile) {
+                setSearchPop(true);
+              }
+            }}>
+            <input
+              type="text"
+              className="searchForm"
+              value={mainSearchValue}
+              onChange={(e) => setMainSearchValue(e.target.value)}
+            />
+            <button type="submit" className="mic">
               <BiSearchAlt />
             </button>
-          </div>
+          </form>
         </div>
         <div className="rightSec">
           <div
             className="support"
             onClick={() => {
               dispatch(changePop("site-video"));
-            }}
-          >
+            }}>
             <FaHandsHelping />
           </div>
           <div className="create">
@@ -216,8 +234,7 @@ export default function Header() {
           <div
             className="profile"
             onClick={() => setProfile(true)}
-            ref={profileButton}
-          >
+            ref={profileButton}>
             A{" "}
             <PopMenu
               status={profile}

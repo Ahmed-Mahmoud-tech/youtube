@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   mode: true,
-  popUpContent: "",
+  popUpContent: "", // auth
   confirmationMessage: "",
   confirmationFun: "",
   currentComponent: {},
+  preloader: true,
 };
 
 export const styleReducer = createSlice({
@@ -26,6 +27,9 @@ export const styleReducer = createSlice({
     changeConfirmationFun: (state, action) => {
       state.confirmationFun = action.payload;
     },
+    changePreloader: (state, action) => {
+      state.preloader = action.payload;
+    },
   },
 });
 
@@ -36,6 +40,7 @@ export const {
   changeConfirmationFun,
   changeMessage,
   changeComponent,
+  changePreloader,
 } = styleReducer.actions;
 
 export default styleReducer.reducer;

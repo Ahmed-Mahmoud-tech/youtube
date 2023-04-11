@@ -13,19 +13,17 @@ import {
 import Link from "next/link";
 
 const Block = ({
-  link,
-  listNumber,
+  videoLength = 0,
   remove,
   like,
-  share,
   views,
-  videoImage,
-  channelImage,
-  videoTitle,
-  channel,
-  date,
-  nativeVideo,
+  avatar,
+  title,
+  username,
+  updatedAt,
+  videoLink,
   index,
+  _id,
 }) => {
   const dispatch = useDispatch();
 
@@ -53,27 +51,26 @@ const Block = ({
       <div className="imageContainer">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <div className="videoImage">
-          {listNumber > 0 && (
+          {videoLength > 0 && (
             <>
-              <Link href={link} className="blockLink"></Link>
+              <Link href={`/list/hamada/${_id}`} className="blockLink"></Link>
 
               <div className="listNumber">
-                {listNumber}
+                {videoLength}
                 <BiListCheck />
                 {remove && (
                   <div
                     className="infoWrapper delete"
-                    onClick={() => showPop("list")}
-                  >
+                    onClick={() => showPop("list")}>
                     <MdOutlineDelete />
                   </div>
                 )}
               </div>
             </>
           )}
-          {listNumber == 0 && (
+          {videoLength == 0 && (
             <div className="placeHolder">
-              <Link href={link} className="blockLink"></Link>
+              <Link href={`/list/hamada/${_id}`} className="blockLink"></Link>
               <div className="infoWrapper">
                 <BiLike /> <span className="word">like</span>
                 <span className="number">{like}</span>
@@ -83,10 +80,10 @@ const Block = ({
                 <FaRegEye /> <span className="word">views</span>
                 <span className="number">{views}</span>
               </div>
-              <div className="infoWrapper">
+              {/* <div className="infoWrapper">
                 <BiShare /> <span className="word">share</span>
                 <span className="number">{share}</span>
-              </div>
+              </div> */}
               <div className="last infoWrapper">
                 <span className="later infoWrapper">
                   <BiStopwatch /> <span className="word">watch later</span>
@@ -95,29 +92,33 @@ const Block = ({
                   <FaPlay />
                 </span>
               </div>
-              {true && (
+              {remove && (
                 <div
                   className="infoWrapper delete"
-                  onClick={() => showPop("video")}
-                >
+                  onClick={() => showPop("video")}>
                   <MdOutlineDelete /> <span className="word">Delete</span>
                   <span className="number"></span>
                 </div>
               )}
             </div>
           )}
-          <Image src={videoImage} alt="vedicAlt" crossOrigin="anonymous" fill />
+          <Image
+            src={"https://img.youtube.com/vi/UB-xp3BqgQE/maxresdefault.jpg"}
+            alt="vedicAlt"
+            crossOrigin="anonymous"
+            fill
+          />
         </div>
       </div>
       <div className="details">
         <div className="avatar">
-          <Image src={channelImage} alt="profile" fill />
+          <Image src={avatar} alt="profile" fill />
         </div>
         <div className="info">
-          <h4 className="videoTitle">{videoTitle}</h4>
-          <span className="channel">{channel}</span>
-          <span className="date">{date}</span>
-          <a href={nativeVideo} className="nativeVideo">
+          <h4 className="videoTitle">{title}</h4>
+          <span className="channel">{username}</span>
+          <span className="date">{updatedAt?.toString().substring(0, 10)}</span>
+          <a href={videoLink} className="nativeVideo">
             native video 00{index}
           </a>
         </div>
