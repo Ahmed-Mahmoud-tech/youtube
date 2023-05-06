@@ -1,12 +1,25 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Wrapper from "./Avatar.styled";
 import ReactDOM from "react-dom";
 import ReactAvatarEditor from "react-avatar-editor";
 
-const Avatar = ({ setAvatar }) => {
+const Avatar = ({ setAvatar, oldImage }) => {
   const [image, setImage] = useState(
     "https://thumbs.dreamstime.com/b/avatar-van-de-geekmens-104871313.jpg"
   );
+
+  function base64UrltoFile(base64Url, fileName) {
+    const base64 = base64Url.replace(/^data:\w+\/\w+;base64,/, "");
+    const byteString = atob(base64);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    const file = new File([ab], fileName, { type: "image/jpeg" });
+    return file;
+  }
+
   const [allowZoomOut, setAllowZoomOut] = useState(false);
   const [position, setPosition] = useState({ x: 0.5, y: 0.5 });
   const [scale, setScale] = useState(1);
@@ -37,7 +50,7 @@ const Avatar = ({ setAvatar }) => {
       try {
         const can = editor?.current?.getImage();
         setPreview(can.toDataURL());
-        setAvatar(can.toDataURL());
+        setAvatar(base64UrltoFile(can.toDataURL(), "fileName"));
       } catch (e) {
         setImage(preview);
       }
@@ -46,6 +59,13 @@ const Avatar = ({ setAvatar }) => {
 
   const editor = useRef();
   const Input = useRef();
+
+  useEffect(() => {
+    if (oldImage) {
+      setImage(oldImage);
+      setPreview(oldImage);
+    }
+  }, [oldImage]);
 
   return (
     <Wrapper>
@@ -75,7 +95,9 @@ const Avatar = ({ setAvatar }) => {
           defaultValue="1"
         />
       </div>
-      <button onClick={() => Input.current.click()}>Upload image</button>
+      <button type="button" onClick={() => Input.current.click()}>
+        Upload image
+      </button>
       <input
         ref={Input}
         name="newImage"

@@ -97,7 +97,7 @@ const Wrapper = styled.div`
         padding: 2px 17px;
         align-items: center;
         border-radius: 5px;
-        font-size: var(--smallFont);
+        font-size: var(--normalFont);
         width: 73%;
         cursor: pointer;
         font-weight: 600;
@@ -122,7 +122,7 @@ const Wrapper = styled.div`
 
         span.play {
           background: var(--primary-background);
-          font-size: var(--smallFont);
+          font-size: var(--normalFont);
           display: flex;
           justify-content: center;
           align-items: center;
@@ -177,10 +177,28 @@ const Wrapper = styled.div`
   }
 
   .channel,
-  .nativeVideo,
   .date {
-    font-size: var(--smallFont);
+    font-size: var(--normalFont);
     display: block;
+  }
+
+  .attractive {
+    & > * {
+      margin-right: 10px;
+    }
+    font-size: var(--normalFont);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 200px;
+    color: var(--primary-background);
+    font-weight: bold;
+    svg {
+      margin-right: 5px;
+      margin-bottom: -4px;
+      font-size: var(--largeFont);
+    }
   }
 `;
 export default Wrapper;

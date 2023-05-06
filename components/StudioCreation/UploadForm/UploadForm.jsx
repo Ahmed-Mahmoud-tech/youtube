@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Wrapper from "./UploadForm.styled";
 import AddInput from "../../Globals/AddInput/AddInput";
 import { useState, useRef } from "react";
@@ -10,8 +10,8 @@ import * as Yup from "yup";
 
 const UploadForm = ({ closeFun, creationData, values = null }) => {
   const close = useRef();
-  const { addVideo } = useRequest();
-  const [list, setList] = useState(["list1", "list2", "list3"]);
+  const { addVideo, userList } = useRequest();
+  const [list, setList] = useState([]);
   const [tag, setTag] = useState([]);
   useOutside(close, closeFun);
 
@@ -71,7 +71,7 @@ const UploadForm = ({ closeFun, creationData, values = null }) => {
       dubbingLanguage: Yup.string().required("Required!"),
       videoLanguage: Yup.string().required("Required!"),
       category: Yup.string().required("Required!"),
-      list: Yup.string().required("Required!"),
+      // list: Yup.string().required("Required!"),
     }),
     onSubmit: async (values) => {
       values.tag = tag;
@@ -92,6 +92,13 @@ const UploadForm = ({ closeFun, creationData, values = null }) => {
       //   });
     },
   });
+
+  useEffect(() => {
+    (async () => {
+      const list = await userList();
+      setList(list.data);
+    })();
+  }, []);
 
   return (
     <Wrapper>
@@ -184,19 +191,19 @@ const UploadForm = ({ closeFun, creationData, values = null }) => {
           </div>
 
           <div className="inputWrapper">
-            <input
-              list="lists"
-              placeholder="select / add list"
+            <select
               name="list"
+              id="list"
               value={formik.values.list}
-              onChange={formik.handleChange}
-              autoComplete="off"
-            />
-            <datalist id="lists">
-              {list.map((item, key) => (
-                <option key={key}>{item}</option>
+              onChange={formik.handleChange}>
+              <option value="">list</option>
+              {Object.keys(list).map((value, index) => (
+                <option value={list[value]} key={index}>
+                  {value}
+                </option>
               ))}
-            </datalist>
+            </select>
+
             {formik.errors.list && formik.touched.list && (
               <p>{formik.errors.list}</p>
             )}

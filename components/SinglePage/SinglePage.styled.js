@@ -129,7 +129,7 @@ const Wrapper = styled.div`
   button.subscribe,
   button.comment {
     color: white;
-    background-color: var(--primary-background);
+    background-color: var(--black-background);
     border: none;
     padding: 5px 11px;
     border-radius: 5px;

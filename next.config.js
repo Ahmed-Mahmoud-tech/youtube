@@ -6,6 +6,8 @@ const nextConfig = {
       "cdn.pixabay.com",
       "img.youtube.com",
       "ashallendesign.ams3.cdn.digitaloceanspaces.com",
+      "localhost",
+      "cdn.xxl.thumbs.canstockphoto.com",
     ],
   },
 };

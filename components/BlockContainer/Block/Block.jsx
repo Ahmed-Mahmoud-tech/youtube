@@ -5,6 +5,8 @@ import { FaRegEye, FaPlay } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
 import { BiLike, BiStopwatch, BiShare, BiListCheck } from "react-icons/bi";
 import { useDispatch } from "react-redux";
+import useRequest from "../../../axios/apis/useRequest";
+
 import {
   changePop,
   changeMessage,
@@ -22,13 +24,12 @@ const Block = ({
   username,
   updatedAt,
   videoLink,
-  index,
   _id,
 }) => {
   const dispatch = useDispatch();
-
+  const { deleteVideo } = useRequest();
   const removeVideo = () => {
-    console.log("remove video");
+    deleteVideo(_id);
   };
   const removeList = () => {
     console.log("remove list");
@@ -48,6 +49,7 @@ const Block = ({
 
   return (
     <Wrapper>
+      {remove}
       <div className="imageContainer">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <div className="videoImage">
@@ -71,15 +73,7 @@ const Block = ({
           {videoLength == 0 && (
             <div className="placeHolder">
               <Link href={`/list/hamada/${_id}`} className="blockLink"></Link>
-              <div className="infoWrapper">
-                <BiLike /> <span className="word">like</span>
-                <span className="number">{like}</span>
-              </div>
 
-              <div className="infoWrapper">
-                <FaRegEye /> <span className="word">views</span>
-                <span className="number">{views}</span>
-              </div>
               {/* <div className="infoWrapper">
                 <BiShare /> <span className="word">share</span>
                 <span className="number">{share}</span>
@@ -118,9 +112,24 @@ const Block = ({
           <h4 className="videoTitle">{title}</h4>
           <span className="channel">{username}</span>
           <span className="date">{updatedAt?.toString().substring(0, 10)}</span>
-          <a href={videoLink} className="nativeVideo">
-            native video 00{index}
-          </a>
+          <div className="attractive">
+            <a
+              href={videoLink}
+              target="_blank"
+              className="nativeVideo"
+              rel="noreferrer">
+              native video
+            </a>
+            <div className="like">
+              <BiLike />
+              <span className="number">{like}</span>
+            </div>
+
+            <div className="views">
+              <FaRegEye />
+              <span className="number">{views}</span>
+            </div>
+          </div>
         </div>
       </div>
     </Wrapper>

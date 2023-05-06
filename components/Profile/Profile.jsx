@@ -1,29 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Wrapper from "./Profile.styled";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Avatar from "./Avatar/Avatar";
+import useRequest from "../../axios/apis/useRequest";
+import { useSelector } from "react-redux";
 
-const Profile = ({ values }) => {
+const Profile = () => {
   const [avatar, setAvatar] = useState("");
+  const userInfo = useSelector((state) => state.user.info);
+
+  const notificationStatus = (type) => {
+    return userInfo.notification ? userInfo.notification.includes(type) : false;
+  };
+
   const [subscribe, setSubscribe] = useState(true);
   const [recommended, setRecommended] = useState(true);
   const [interaction, setInteraction] = useState(true);
   const [replay, setReplay] = useState(true);
+
   const phoneRegExp = /^\+?([0-9]{2})\)?[-. ]?([0-9]{4})[-. ]?([0-9]{3,7})$/;
+
+  const { profileData } = useRequest();
 
   const formik = useFormik({
     initialValues: {
-      userName: values ? values.userName : "",
-      fullName: values ? values.fullName : "",
-      phone: values ? values.phone : "",
-      email: values ? values.email : "",
-      age: values ? values.age : "",
-      gender: values ? values.gender : "",
-      password: values ? values.password : "",
+      username: userInfo.username ? userInfo.username : "",
+      fullName: userInfo.fullName ? userInfo.fullName : "",
+      phone: userInfo.phone ? userInfo.phone : "",
+      email: userInfo.email ? userInfo.email : "",
+      age: userInfo.age ? userInfo.age : "",
+      gender: userInfo.gender ? userInfo.gender : "",
+      password: userInfo.password ? userInfo.password : "",
     },
     validationSchema: Yup.object({
-      userName: Yup.string().required("Required!"),
+      username: Yup.string().required("Required!"),
       fullName: Yup.string().required("Required!"),
       phone: Yup.string()
         .required("Required!")
@@ -37,7 +48,7 @@ const Profile = ({ values }) => {
           (value) => parseInt(value) > 6 && parseInt(value) < 101
         ),
       gender: Yup.string().required("Required!"),
-      password: Yup.string().required("Required!").min(8).max(22),
+      password: Yup.string().min(8).max(22),
     }),
     onSubmit: (values) => {
       const notification = {
@@ -47,12 +58,43 @@ const Profile = ({ values }) => {
         replay,
       };
 
-      values.notification = notification;
+      const permission = [];
+
+      for (const [key, value] of Object.entries(notification)) {
+        if (value) {
+          permission.push(key);
+        }
+      }
+
+      values.notification = permission;
+
       values.avatar = avatar;
 
-      console.log("send Data", { values });
+      const formData = new FormData();
+      Object.keys(values).map((key, index) => {
+        formData.append(key, values[key]);
+      });
+
+      profileData({ userId: userInfo?._id, info: formData });
     },
   });
+
+  useEffect(() => {
+    formik.setValues({
+      username: userInfo.username ? userInfo.username : "",
+      fullName: userInfo.fullName ? userInfo.fullName : "",
+      phone: userInfo.phone ? userInfo.phone : "",
+      email: userInfo.email ? userInfo.email : "",
+      age: userInfo.age ? userInfo.age : "",
+      gender: userInfo.gender ? userInfo.gender : "",
+      password: userInfo.password ? userInfo.password : "",
+    });
+
+    setSubscribe(notificationStatus("subscribe"));
+    setRecommended(notificationStatus("recommended"));
+    setInteraction(notificationStatus("interaction"));
+    setReplay(notificationStatus("replay"));
+  }, [userInfo]);
 
   return (
     <Wrapper>
@@ -62,20 +104,23 @@ const Profile = ({ values }) => {
             <h4>Personal Information:</h4>
 
             <div className="personal">
-              <Avatar setAvatar={setAvatar} />
+              <Avatar
+                setAvatar={setAvatar}
+                oldImage={userInfo.avatar ? userInfo.avatar : ""}
+              />
               <div className="textInputs">
                 <div className="inputWrapper">
                   <input
                     type="text"
-                    name="userName"
+                    name="username"
                     placeholder="User Name"
-                    id="userName"
-                    value={formik.values.userName}
+                    id="username"
+                    value={formik.values.username}
                     onChange={formik.handleChange}
                   />
 
-                  {formik.errors.userName && formik.touched.userName && (
-                    <p>{formik.errors.userName}</p>
+                  {formik.errors.username && formik.touched.username && (
+                    <p>{formik.errors.username}</p>
                   )}
                 </div>
                 <div className="inputWrapper">
@@ -136,8 +181,7 @@ const Profile = ({ values }) => {
                     name="gender"
                     id="gender"
                     value={formik.values.gender}
-                    onChange={formik.handleChange}
-                  >
+                    onChange={formik.handleChange}>
                     <option value="">Gender</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>

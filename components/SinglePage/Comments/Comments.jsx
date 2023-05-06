@@ -1,40 +1,104 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Wrapper from "./Comments.styled";
-import { FaThumbsDown, FaThumbsUp, FaReplyAll } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import useRequest from "../../../axios/apis/useRequest";
+import {
+  FaThumbsDown,
+  FaThumbsUp,
+  FaReplyAll,
+  FaComments,
+} from "react-icons/fa";
 
 const Comments = ({ VideoComments }) => {
-  // console.log({ VideoComments });
+  const userInfo = useSelector((state) => state.user.info);
+
   const generateComment = (
-    id,
-    src,
-    name,
-    comment,
+    _id,
+    commentUser,
+    text,
     comments,
-    likeNumber,
-    disLikeNumber,
+    like,
+    dislike,
+    isLike,
+    isDislike,
     parent
   ) => {
-    const [like, setLike] = useState(0);
+    console.log(isLike, isDislike, "99999999999999999999999999", _id);
+
+    const [subComment, setSubComment] = useState([]);
+    const [showComment, setShowComment] = useState(false);
+    const [requestCommentId, setRequestCommentId] = useState(false);
+    const [likeState, setLikeState] = useState(0);
     const [replay, setReplay] = useState(false);
+    const [commentsCount, setCommentsCount] = useState(comments.length);
+    const [likeCount, setLikeCount] = useState(like);
+    const [dislikeCount, setDislikeCount] = useState(dislike);
     const [replayText, setReplayText] = useState("");
+    const { getComments, addComment, editComment } = useRequest();
 
-    const likeFun = (id) => {
-      like === -1 && console.log("remove disLike");
-      like != 1 ? setLike(1) : setLike(0);
-      // send request increase or decrease
-    };
-    const disLikeFun = (id) => {
-      like === 1 && console.log("remove Like");
-      like != -1 ? setLike(-1) : setLike(0);
-      // send request increase or decrease
-    };
-
-    const sumitForm = () => {
-      if (replayText.trim()) {
-        // send replay
+    useEffect(() => {
+      if (isLike) {
+        setLikeState(1);
       }
+      if (isDislike) setLikeState(-1);
+    }, [VideoComments]);
+
+    const likeFun = () => {
+      if (likeState != 1) {
+        setLikeState(1);
+        editComment({ url: _id, data: { like: "add" } });
+        setLikeCount(likeCount + 1);
+        likeState == -1 && setDislikeCount(dislikeCount - 1);
+      } else {
+        setLikeState(0);
+        editComment({ url: _id, data: { like: "remove" } });
+        setLikeCount(likeCount - 1);
+      }
+      // send request increase or decrease
+    };
+    const disLikeFun = () => {
+      likeState === 1 && console.log("remove Like");
+      if (likeState != -1) {
+        setLikeState(-1);
+        editComment({ url: _id, data: { dislike: "add" } });
+        setDislikeCount(dislikeCount + 1);
+        likeState == 1 && setLikeCount(likeCount - 1);
+      } else {
+        setLikeState(0);
+        editComment({ url: _id, data: { dislike: "remove" } });
+        setDislikeCount(dislikeCount - 1);
+      }
+      // send request increase or decrease
+    };
+
+    const getCommentsRequest = async () => {
+      if (!requestCommentId) {
+        const result = await getComments(
+          `${!userInfo.username ? "notAuth/comment" : "comment"}/${_id}`
+        );
+        setSubComment(result.data);
+        setRequestCommentId(true);
+      }
+      setShowComment(!showComment);
+    };
+    const sumitForm = async (e) => {
+      e.preventDefault();
+      if (replayText.trim()) {
+        await addComment({
+          type: "comment",
+          commentOn: _id,
+          text: replayText,
+        });
+        setCommentsCount(commentsCount + 1);
+        const result = await getComments(
+          `${!userInfo.username ? "notAuth/comment" : "comment"}/${_id}`
+        );
+        setSubComment(result.data);
+      }
+      // setRequestCommentId(false);
+
       setReplay(false);
       setReplayText("");
     };
@@ -42,46 +106,59 @@ const Comments = ({ VideoComments }) => {
     return (
       <div
         className="commentWrapper"
-        style={{ marginLeft: parent ? "0" : "-30px" }}
-      >
+        style={{ marginLeft: parent ? "0" : "-30px" }}>
         <div className="pic" style={{ minWidth: parent ? 50 : 40 }}>
           <Image
-            src={src}
+            src={commentUser.avatar}
             alt={"author"}
-            width={parent ? 50 : 40}
-            height={parent ? 50 : 40}
+            width={parent == true ? 45 : 40}
+            height={parent == true ? 45 : 40}
           />
+          {console.log({ parent })}
         </div>
         <div className="info">
-          <div className="name">{name}</div>
-          <div className="comment">{comment}</div>
+          <div className="name">{commentUser.username}</div>
+          <div className="comment">{text}</div>
           <div className="action">
             <div className="clickAction">
               <span
                 className="like"
-                onClick={() => likeFun(id)}
-                style={{ color: like === 1 && "var(--primary-background)" }}
-              >
+                onClick={() => likeFun()}
+                style={{
+                  color: likeState === 1 && "var(--primary-background)",
+                }}>
                 <FaThumbsUp />
-                <span className="number">{likeNumber}</span>
+                <span className="number">{likeCount}</span>
               </span>
               <span
                 className="disLike"
-                onClick={() => disLikeFun(id)}
-                style={{ color: like === -1 && "var(--primary-background)" }}
-              >
+                onClick={() => disLikeFun()}
+                style={{
+                  color: likeState === -1 && "var(--primary-background)",
+                }}>
                 <FaThumbsDown />
-                <span className="number">{disLikeNumber}</span>
+                <span className="number">{dislikeCount}</span>
               </span>
               <span
                 className="replay"
                 onClick={() => setReplay(!replay)}
-                style={{ color: replay && "var(--primary-background)" }}
-              >
+                style={{ color: replay && "var(--primary-background)" }}>
                 <FaReplyAll />
                 <span className="number">Replay</span>
               </span>
+              {(comments?.length != "0" || subComment?.length != "0") && (
+                <span
+                  className="comments"
+                  onClick={getCommentsRequest}
+                  style={{
+                    color: showComment && "var(--primary-background)",
+                  }}>
+                  <FaComments />
+                  <span className="number">Comments: {commentsCount}</span>
+                </span>
+              )}
             </div>
+
             {replay && (
               <div className="replayForm">
                 <form action="" onSubmit={sumitForm}>
@@ -97,21 +174,24 @@ const Comments = ({ VideoComments }) => {
                 </form>
               </div>
             )}
-            {comments.length > 0 && (
+
+            {subComment.length > 0 && showComment && (
               <div className="comments">
-                {comments.map((comment, index) => (
-                  <div key={index} comment={comment}>
-                    {generateComment(
-                      comments[index].id,
-                      comments[index].src,
-                      comments[index].name,
-                      comments[index].comment,
-                      comments[index].comments,
-                      comments[index].likeNumber,
-                      comments[index].disLikeNumber,
-                      false
-                    )}
-                  </div>
+                {subComment.map((comment, index) => (
+                  <Comments
+                    key={index}
+                    VideoComments={{
+                      _id: comment._id,
+                      commentUser: comment.commentUser,
+                      text: comment.text,
+                      comments: comment.comments,
+                      like: comment.like,
+                      dislike: comment.dislike,
+                      isLike: comment.isLike,
+                      isDislike: comment.isDislike,
+                      parent: false,
+                    }}
+                  />
                 ))}
               </div>
             )}
@@ -124,14 +204,15 @@ const Comments = ({ VideoComments }) => {
   return (
     <Wrapper>
       {generateComment(
-        VideoComments.id,
-        VideoComments.src,
-        VideoComments.name,
-        VideoComments.comment,
+        VideoComments._id,
+        VideoComments.commentUser,
+        VideoComments.text,
         VideoComments.comments,
-        VideoComments.likeNumber,
-        VideoComments.disLikeNumber,
-        true
+        VideoComments.like,
+        VideoComments.dislike,
+        VideoComments.isLike,
+        VideoComments.isDislike,
+        VideoComments.parent
       )}
     </Wrapper>
   );

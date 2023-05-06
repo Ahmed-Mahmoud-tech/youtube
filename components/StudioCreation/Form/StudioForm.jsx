@@ -5,6 +5,25 @@ import { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
+import useRequest from "../../../axios/apis/useRequest";
+
+export const getId = (e, type = "event") => {
+  let link;
+  if (type == "event") {
+    link = e.target.value;
+  } else {
+    link = e;
+  }
+  console.log({ link });
+  if (link.includes("youtube.com")) {
+    var video_id = link?.split("v=")[1];
+    var ampersandPosition = video_id?.indexOf("&");
+    if (ampersandPosition != -1) {
+      video_id = video_id?.substring(0, ampersandPosition);
+    }
+    return video_id;
+  }
+};
 
 const StudioForm = ({
   videoTitle,
@@ -25,6 +44,11 @@ const StudioForm = ({
   const [startMinute, setStartMinute] = useState(0);
   const [startSecond, setStartSecond] = useState(0);
   const [validationObj, setValidationObj] = useState(0);
+  const [actionType, setActionType] = useState("Add");
+  const [listInput, setListInput] = useState("");
+  const [list, setList] = useState([]);
+
+  const { userList, addList, removeList } = useRequest();
 
   useEffect(() => {
     setEndSecond(0);
@@ -44,17 +68,13 @@ const StudioForm = ({
     formik.values.endMinute = "";
   }, [dubbingOption]);
 
-  const getId = (e) => {
-    if (e.target.value.includes("youtube.com")) {
-      var video_id = e.target.value?.split("v=")[1];
-      var ampersandPosition = video_id?.indexOf("&");
-      if (ampersandPosition != -1) {
-        video_id = video_id?.substring(0, ampersandPosition);
-      }
-      setVideoId(video_id);
-      console.log({ video_id });
-    }
-  };
+  useEffect(() => {
+    (async () => {
+      const list = await userList();
+      setList(list.data);
+    })();
+  }, []);
+
   const warningMassage = (message) => {
     toast.warn(message, {
       position: "top-center",
@@ -207,6 +227,19 @@ const StudioForm = ({
     },
   });
 
+  const listAction = async () => {
+    if (actionType == "Add") {
+      await addList({
+        title: listInput,
+      });
+    } else if (actionType == "Remove") {
+      await removeList(list[listInput]);
+    }
+    const listData = await userList();
+    setList(listData.data);
+    setListInput("");
+    setActionType("Add");
+  };
   return (
     <Wrapper>
       <div className="upForm">
@@ -221,7 +254,7 @@ const StudioForm = ({
               placeholder="video Link"
               onChange={(e) => {
                 formik.handleChange(e);
-                getId(e);
+                setVideoId(getId(e));
               }}
               value={formik.values.videoLink}
             />
@@ -256,8 +289,7 @@ const StudioForm = ({
                   formik.handleChange(e);
                 }
               }}
-              value={formik.values.type}
-            >
+              value={formik.values.type}>
               <option value="">Dubbing Options</option>
               <option value="0">Without Dubbing</option>
               <option value="1">Upload Dubbing</option>
@@ -356,6 +388,31 @@ const StudioForm = ({
             Finish
           </button>
         </form>
+      </div>
+      <div className="listForm">
+        <input
+          list="lists"
+          placeholder="Add/Remove list"
+          name="list"
+          autoComplete="off"
+          value={listInput}
+          onChange={(e) => {
+            Object.keys(list).includes(e.target.value)
+              ? setActionType("Remove")
+              : setActionType("Add");
+
+            setListInput(e.target.value);
+          }}
+        />
+        <datalist id="lists">
+          {Object.keys(list).map((item, key) => (
+            <option key={key}>{item}</option>
+          ))}
+        </datalist>
+
+        <button typ="button" onClick={listAction}>
+          {actionType}
+        </button>
       </div>
     </Wrapper>
   );

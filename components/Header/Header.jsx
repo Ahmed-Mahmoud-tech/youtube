@@ -27,7 +27,7 @@ import { FaHandsHelping, FaBusinessTime } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineLightMode, MdOutlineDarkMode } from "react-icons/md";
 import { useOutside } from "../../utilities/main";
-
+import { addUserData, clearUserData } from "../../store/slices/user";
 import useRequest from "../../axios/apis/useRequest";
 import { searchVideos } from "../../store/slices/videoResult";
 
@@ -37,7 +37,6 @@ export default function Header() {
   const [searchPop, setSearchPop] = useState(false);
   const [profile, setProfile] = useState(false);
   const [mainMenu, setMainMenu] = useState(false);
-  const [modeLink, setModeLink] = useState();
   const [modeText, setModeText] = useState();
   const [modeIcon, setModeIcon] = useState();
   const [mainSearchValue, setMainSearchValue] = useState();
@@ -47,12 +46,21 @@ export default function Header() {
   const searchButton = useRef(null);
 
   const currentMode = useSelector((state) => state.style.mode);
-  const dispatch = useDispatch();
-  const changeModeFun = () => {
-    dispatch(changeMode(!currentMode));
-  };
+  const avatar = useSelector((state) => state.user.info.avatar);
 
-  const { mainSearch } = useRequest();
+  const dispatch = useDispatch();
+  const { mainSearch, userData, logOut } = useRequest();
+
+  const menuFun = () => {
+    return [
+      () => dispatch(changeMode(!currentMode)),
+      () => {
+        dispatch(clearUserData());
+        localStorage.setItem("token", "");
+        logOut();
+      },
+    ];
+  };
 
   const closeProfile = () => {
     setProfile(false);
@@ -62,14 +70,22 @@ export default function Header() {
   };
   useEffect(() => {
     window.innerWidth > 768 ? setIsMobile(false) : setIsMobile(true);
+    (async () => {
+      const localStorageToken = localStorage.getItem("token");
+      if (localStorageToken) {
+        const res = await userData();
+        if (res) {
+          dispatch(addUserData(res.data));
+        }
+      }
+    })();
   }, []);
   useOutside(profileButton, closeProfile);
   useOutside(menuButton, closeMenu);
   useOutside(searchButton, setSearchPop);
 
   useEffect(() => {
-    setModeLink(currentMode ? "/" : "/"),
-      setModeText(currentMode ? "Dark Mode" : "Light Mode"),
+    setModeText(currentMode ? "Dark Mode" : "Light Mode"),
       setModeIcon(currentMode ? <MdOutlineDarkMode /> : <MdOutlineLightMode />);
   }, [currentMode]);
 
@@ -78,43 +94,51 @@ export default function Header() {
       link: "/",
       text: "Home",
       icon: <BiHome />,
+      needAuth: "all",
     },
 
     {
       link: "/",
       text: "Likes",
       icon: <BiLike />,
+      needAuth: true,
     },
 
     {
       link: "/",
       text: "Watch Later",
       icon: <FaBusinessTime />,
+      needAuth: true,
     },
     {
       link: "/",
       text: "Subscribe",
       icon: <MdOutlineSubscriptions />,
+      needAuth: true,
     },
     {
       link: "/yourlists",
       text: "Your Lists",
       icon: <BiListUl />,
+      needAuth: true,
     },
     {
       link: "/",
       text: "History",
       icon: <BiHistory />,
+      needAuth: true,
     },
     {
       link: "/yourvideos",
       text: "Your Videos",
       icon: <BiVideo />,
+      needAuth: true,
     },
     {
       link: "/",
       text: "Create Video",
       icon: <BiVideoPlus />,
+      needAuth: true,
     },
     // {
     //   link: "/",
@@ -125,11 +149,13 @@ export default function Header() {
       link: "/",
       text: "Support Us",
       icon: <FaHandsHelping />,
+      needAuth: "all",
     },
     {
       link: "/",
       text: "Donate",
       icon: <BiDonateHeart />,
+      needAuth: "all",
     },
   ];
 
@@ -139,24 +165,30 @@ export default function Header() {
       link: "/",
       text: "Profile",
       icon: <CgProfile />,
+      needAuth: true,
     },
     {
       type: "link",
       link: "/contactus",
       text: "Help",
       icon: <BiSupport />,
+      needAuth: "all",
     },
     {
       type: "fun",
-      link: modeLink,
+      funIndex: 0,
+      link: "/",
       text: modeText,
       icon: modeIcon,
+      needAuth: "all",
     },
     {
-      type: "link",
+      type: "fun",
+      funIndex: 1,
       link: "/",
       text: "LogOut",
       icon: <BiLogOutCircle />,
+      needAuth: true,
     },
   ];
 
@@ -197,7 +229,7 @@ export default function Header() {
               e.preventDefault();
               if (
                 ((isMobile && searchPop) || !isMobile) &&
-                mainSearchValue.trim()
+                mainSearchValue?.trim()
               ) {
                 const data = await mainSearch(mainSearchValue);
                 dispatch(searchVideos(data.data));
@@ -224,23 +256,38 @@ export default function Header() {
             }}>
             <FaHandsHelping />
           </div>
-          <div className="create">
-            <BiVideoPlus />
-          </div>
-          <div className="notification">
-            <span className="count">+9</span>
-            <BiBell />
-          </div>
+          {avatar ? (
+            <>
+              <div className="create">
+                <BiVideoPlus />
+              </div>
+
+              <div className="notification">
+                <span className="count">+9</span>
+                <BiBell />
+              </div>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="login"
+              onClick={() => dispatch(changePop("auth"))}>
+              LogIn
+            </button>
+          )}
           <div
             className="profile"
-            onClick={() => setProfile(true)}
-            ref={profileButton}>
-            A{" "}
+            onClick={() => {
+              setProfile(true);
+            }}
+            ref={profileButton}
+            style={{ backgroundImage: `url(${avatar})` }}>
+            {!avatar && "U"}
             <PopMenu
               status={profile}
               right={"0"}
               data={rightData}
-              fun={changeModeFun}
+              fun={menuFun}
             />
           </div>
         </div>

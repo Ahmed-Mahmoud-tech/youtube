@@ -1,23 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  value: 0,
+  info: {},
 };
 
 export const userReducer = createSlice({
   name: "user",
   initialState,
   reducers: {
-    decrement: (state) => {
-      state.value -= 1;
+    clearUserData: (state) => {
+      state.info = {};
     },
-    incrementByAmount: (state, action) => {
-      state.value += action.payload;
+    addUserData: (state, action) => {
+      for (const [key, value] of Object.entries(action.payload)) {
+        state.info[key] = value;
+      }
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { decrement, incrementByAmount } = userReducer.actions;
+export const { addUserData, clearUserData } = userReducer.actions;
 
 export default userReducer.reducer;

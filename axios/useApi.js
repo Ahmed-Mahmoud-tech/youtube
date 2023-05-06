@@ -30,7 +30,6 @@ const useApi = () => {
       //! add auth
       if (!noAuth.includes(config.url)) {
         const localStorageToken = localStorage.getItem("token");
-
         config.headers.Authorization = localStorageToken
           ? `Bearer ${localStorageToken}`
           : "";
@@ -57,6 +56,7 @@ const useApi = () => {
       if (err.response) {
         //when the Access Token is expired
         if (err.response.status === 401) {
+          localStorage.removeItem("token");
           // if the refresh token expired clear the local storage and navigate to login
           toast.error(err.response.data.message, {
             position: toast.POSITION.TOP_CENTER,

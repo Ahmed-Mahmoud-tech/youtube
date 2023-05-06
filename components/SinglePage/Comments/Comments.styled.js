@@ -1,6 +1,6 @@
 import styled from "styled-components";
 const Wrapper = styled.div`
-  border-bottom: 1px solid var(--gradient0);
+  border-bottom: 1px solid var(--gradient_1);
   margin-bottom: 30px;
   padding-bottom: 15px;
   .commentWrapper {
@@ -13,6 +13,7 @@ const Wrapper = styled.div`
 
     .info {
       max-width: calc(100% - 50px);
+      width: 100%;
     }
 
     .name {
@@ -24,6 +25,7 @@ const Wrapper = styled.div`
     .comment {
       font-size: var(--normalFont);
       line-height: var(--normalFont);
+      margin-bottom: 5px;
     }
 
     .action .clickAction {
@@ -31,7 +33,7 @@ const Wrapper = styled.div`
       & > span {
         font-size: var(--normalFont);
         display: flex;
-        margin: 5px;
+        margin: 5px 4px;
         cursor: pointer;
 
         svg {
@@ -51,7 +53,7 @@ const Wrapper = styled.div`
     .pic {
       min-width: 50px;
       margin-right: 8px;
-      margin-top: 10px;
+      margin-top: 5px;
     }
 
     textarea {

@@ -3,8 +3,11 @@ import Wrapper from "./Auth.styled";
 import useRequest from "../../../../axios/apis/useRequest";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-
+import { useDispatch } from "react-redux";
+import { addUserData } from "../../../../store/slices/user";
+import { changePop } from "../../../../store/slices/style";
 const Auth = () => {
+  const dispatch = useDispatch();
   const { signIn, signUp } = useRequest();
   const [login, setLogin] = useState(true);
 
@@ -31,12 +34,15 @@ const Auth = () => {
         onSubmit={async (values) => {
           if (login) {
             const res = await signIn(values);
-            localStorage.setItem("token", res.data.accessToken);
+            if (res) {
+              localStorage.setItem("token", res.data.userInfo.accessToken);
+              dispatch(addUserData(res.data.userInfo));
+              dispatch(changePop(""));
+            }
           } else {
             signUp(values);
           }
-        }}
-      >
+        }}>
         {() => (
           <Form action="">
             <Field name="user" placeholder="User Name" />

@@ -109,6 +109,19 @@ const Wrapper = styled.div`
       }
     }
 
+    .login {
+      background: var(--primary-background);
+      font-weight: bold;
+      margin: 5px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: var(--white-color);
+      &:hover {
+        background: var(--black-color);
+        cursor: pointer;
+      }
+    }
+
     .notification {
       position: relative;
       .count {
@@ -130,6 +143,7 @@ const Wrapper = styled.div`
       font-size: 1rem;
       padding: 1rem;
       background: var(--primary-background);
+      background-size: cover;
       border-radius: 50%;
       height: 1rem;
       width: 1rem;
